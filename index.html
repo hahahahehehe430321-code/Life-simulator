@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港人生模擬器 - Kong's Version</title>
+    <title>香港人生模擬器 - 隨機命運版</title>
     <style>
         :root {
             --hk-red: #de2910;
@@ -84,10 +84,15 @@
             background: #fff;
             border-bottom: 1px solid #eee;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 5px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             color: #2c3e50;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
         }
 
         .story-container {
@@ -185,7 +190,7 @@
 <div class="container">
     <header>
         <h1>🇭🇰 香港人生模擬器</h1>
-        <p>夾band、賺外快、去Concert，屬於你嘅香港故事</p>
+        <p>隨機投胎 • 體驗完全唔同嘅香港地道人生</p>
     </header>
 
     <!-- 狀態欄 -->
@@ -208,16 +213,22 @@
         </div>
     </div>
 
-    <!-- 基本資料 -->
+    <!-- 基本資料 (隨機名字與地區) -->
     <div class="info-panel">
-        <span id="infoName">姓名：Kong Hoi Yau</span>
-        <span id="infoAge">年齡：0 歲 (初生嬰兒)</span>
+        <div class="info-row">
+            <span id="infoName">姓名：--</span>
+            <span id="infoDistrict">地區：--</span>
+        </div>
+        <div class="info-row">
+            <span id="infoAge">年齡：0 歲 (初生嬰兒)</span>
+            <span id="infoHousing">住屋：--</span>
+        </div>
     </div>
 
     <!-- 故事與事件區 -->
     <div class="story-container">
         <div class="story-year" id="storyYear">年份：2026年</div>
-        <div class="story-text" id="storyText">你喺香港順利出世喇！充滿藝術細胞同音樂天分嘅你，註定有一段多姿多采嘅人生。</div>
+        <div class="story-text" id="storyText">正在隨機投胎中……</div>
         <div class="choices-container" id="choicesContainer"></div>
     </div>
 
@@ -232,13 +243,32 @@
     <div class="modal-content">
         <h2 id="modalTitle">遊戲結束</h2>
         <p id="modalDesc">你嘅香港人生到此為止。</p>
-        <button class="restart-btn" onclick="restartGame()">重新投胎</button>
+        <button class="restart-btn" onclick="initNewGame()">重新投胎</button>
     </div>
 </div>
 
 <script>
+    // 隨機資料庫
+    const surnames = ["陳", "張", "李", "劉", "黃", "周", "吳", "鄭", "何", "馬", "郭", "梁", "林", "曾", "羅", "潘", "謝", "唐", "許", "容"];
+    const givenNames = ["家豪", "美儀", "俊傑", "芷晴", "頌恩", "梓軒", "凱婷", "樂賢", "詩雅", "朗晴", "浩然", "曉彤", "健宏", "思敏", "柏熹", "詠琪", "彥廷", "若希", "海澄", "悅彤"];
+    
+    const districts = [
+        { name: "沙田", housing: "公屋", wealthMod: 4000 },
+        { name: "元朗", housing: "村屋", wealthMod: 5000 },
+        { name: "觀塘", housing: "舊樓", wealthMod: 3000 },
+        { name: "灣仔", housing: "唐樓", wealthMod: 7000 },
+        { name: "將軍澳", housing: "私樓", wealthMod: 10000 },
+        { name: "屯門", housing: "公屋", wealthMod: 3500 },
+        { name: "西營盤", housing: "舊樓", wealthMod: 6000 },
+        { name: "旺角", housing: "劏房", wealthMod: 2000 },
+        { name: "太古", housing: "私樓", wealthMod: 12000 },
+        { name: "荃灣", housing: "居屋", wealthMod: 6000 }
+    ];
+
     let player = {
-        name: "Kong Hoi Yau",
+        name: "",
+        district: "",
+        housing: "",
         age: 0,
         year: 2026,
         health: 100,
@@ -251,54 +281,81 @@
     const events = [
         {
             minAge: 3, maxAge: 6,
-            text: "父母比你接觸左唔同嘅樂器同畫畫，你對填色同夾雜水彩好有興趣！",
+            text: "你開始喺屋企附近嘅地區盲鐘鐘咁學行路，阿媽每日帶你去公園玩滑梯。",
             choices: [
-                { text: "專心用簡單背景畫出自己嘅幻想世界", effect: { happiness: 10, smart: 5 } },
-                { text: "拎起結他/Ukulele亂彈一通", effect: { happiness: 15, smart: 2 } }
+                { text: "同隔離街嘅小朋友開心爭玩具玩", effect: { happiness: 10, smart: 2 } },
+                { text: "扭計要食麥當勞開心樂園餐", effect: { happiness: 15, wealth: -100 } }
             ]
         },
         {
             minAge: 7, maxAge: 11,
-            text: "小學生活開始喇，除左應付測驗，你仲展現左好多才華（好似溜冰、游水、彈豎琴等）。",
+            text: "升咗小學喇！每日要對住大量功課同測驗，你點面對？",
             choices: [
-                { text: "放學去溜冰場同朋友仔玩", effect: { happiness: 15, health: 5 } },
-                { text: "留喺屋企安靜咁手作整小手作", effect: { happiness: 10, smart: 5 } }
+                { text: "乖乖地溫書爭取好成績", effect: { smart: 15, happiness: -10 } },
+                { text: "放學即刻去士多買汽水同朋友玩", effect: { happiness: 15, smart: -5 } }
             ]
         },
         {
             minAge: 12, maxAge: 15,
-            text: "中學時期，你迷上左夾band同聽靚歌，仲好想去睇心儀歌手嘅Concert！",
+            text: "中學派位結果出爐，青春期嘅你開始有自己嘅興趣同煩惱。",
             choices: [
-                { text: "親手整靚靚嘅Concert應援裝飾物同手作", effect: { happiness: 20, wealth: -300 } },
-                { text: "同朋友一齊夾band玩音樂", effect: { happiness: 20, smart: 5 } }
+                { text: "專心學畫畫或者夾band玩音樂", effect: { happiness: 20, smart: 5 } },
+                { text: "拼命補習追貼名校進度", effect: { smart: 10, wealth: -500, happiness: -10 } }
             ]
         },
         {
             minAge: 16, maxAge: 18,
-            text: "迎黎地獄級嘅 **DSE香港中學文憑試**，溫書溫到好攰……",
+            text: "迎黎地獄級嘅 **DSE香港中學文憑試**！",
             choices: [
-                { text: "頂硬上通宵溫書，為前途搏盡", effect: { smart: 20, health: -15, happiness: -15 } },
-                { text: "聽住 Laufey 嘅歌黎療癒心靈，放鬆心情", effect: { happiness: 25, smart: -5 } }
+                { text: "日夜苦讀，目標入三大", effect: { smart: 25, happiness: -20, health: -10 } },
+                { text: "聽住歌hea讀，順其自然", effect: { happiness: 15, smart: -5 } }
             ]
         },
         {
             minAge: 19, maxAge: 25,
-            text: "升左大學 / 出黎兼職賺錢。為左儲錢，你開始返幾份工（補習、麥當勞、Kidult Academy）。",
+            text: "踏入社會或者讀大學，為左賺零用錢，你開始做兼職（例如補習、麥當勞、Kidult Academy）。",
             choices: [
-                { text: "去補習社 ($75/hr) 教學生，賺取穩定收入", effect: { wealth: 2500, smart: 10 } },
-                { text: "去麥當勞 ($60/hr) 做兼職，順便享受中間嘅休息時段", effect: { wealth: 2000, health: -5 } },
-                { text: "去 Kidult Academy ($65/hr) 開心返工", effect: { wealth: 2200, happiness: 10 } }
+                { text: "去補習社 ($75/hr) 教學生賺錢", effect: { wealth: 2500, smart: 5 } },
+                { text: "去麥當勞 ($60/hr) 返工嘆休息時段", effect: { wealth: 2000, health: -5 } },
+                { text: "去 Kidult Academy ($65/hr) 開心兼職", effect: { wealth: 2200, happiness: 10 } }
             ]
         },
         {
-            minAge: 26, maxAge: 50,
-            text: "閒時除左做嘢，仲會同老友記開網上直播或者同朋友打機，充滿快樂回憶。",
+            minAge: 26, maxAge: 60,
+            text: "出黎做野幾年，香港生活指數高，日日要面對工作壓力。",
             choices: [
-                { text: "開live同粉絲互動，重溫做Content Creator嘅快樂", effect: { happiness: 20, wealth: 1000 } },
-                { text: "同老友一齊連線打機，放鬆減壓", effect: { happiness: 20, health: -2 } }
+                { text: "瘋狂OT搏上位，儲錢想上車買樓", effect: { wealth: 15000, health: -15, happiness: -15 } },
+                { text: "做個「佛系打工仔」，放假去行山同開live打機", effect: { happiness: 20, wealth: 1000 } }
             ]
         }
     ];
+
+    function initNewGame() {
+        // 隨機抽名字
+        let randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
+        let randomGiven = givenNames[Math.floor(Math.random() * givenNames.length)];
+        
+        // 隨機抽地區與住屋
+        let randomDistObj = districts[Math.floor(Math.random() * districts.length)];
+
+        player = {
+            name: randomSurname + randomGiven,
+            district: randomDistObj.name,
+            housing: randomDistObj.housing,
+            age: 0,
+            year: 2026,
+            health: 100,
+            happiness: 80,
+            smart: 50,
+            wealth: randomDistObj.wealthMod,
+            status: "初生嬰兒"
+        };
+
+        document.getElementById('gameOverModal').style.display = 'none';
+        document.getElementById('storyText').innerText = `你喺香港嘅【${player.district}】順利出世喇！屋企住喺【${player.housing}】，父母望住呢個初生BB，滿心歡喜。`;
+        document.getElementById('actionPanel').style.display = 'block';
+        updateUI();
+    }
 
     function updateUI() {
         document.getElementById('statHealthNum').innerText = player.health + '%';
@@ -315,17 +372,18 @@
         document.getElementById('barWealth').style.width = Math.max(0, wealthPercent) + '%';
 
         document.getElementById('infoName').innerText = `姓名：${player.name}`;
+        document.getElementById('infoDistrict').innerText = `地區：${player.district} (${player.housing})`;
         document.getElementById('infoAge').innerText = `年齡：${player.age} 歲 (${player.status})`;
         document.getElementById('storyYear').innerText = `年份：${player.year}年`;
     }
 
     function checkAgeStatus() {
         if (player.age < 3) player.status = "初生嬰兒";
-        else if (player.age < 6) player.status = "精靈小朋友";
-        else if (player.age < 12) player.status = "多才多藝小學生";
-        else if (player.age < 18) player.status = "中學夾band文青";
-        else if (player.age < 25) { player.status = "斜槓族兼職達人 (補習/Mcd/Kidult)"; }
-        else { player.status = "成熟創作者 / 獨立型女性"; }
+        else if (player.age < 6) player.status = "幼稚園學童";
+        else if (player.age < 12) player.status = "小學雞";
+        else if (player.age < 18) player.status = "中學生";
+        else if (player.age < 25) { player.status = "斜槓族兼職達人"; }
+        else { player.status = "香港打工仔 / 創作者"; }
     }
 
     function nextYear() {
@@ -337,7 +395,7 @@
         player.happiness = Math.max(0, Math.min(100, player.happiness + (Math.floor(Math.random() * 5) - 2)));
 
         if (player.health <= 0 || player.happiness <= 0) {
-            endGame("由於生活壓力太大，需要好好休息重新嚟過……");
+            endGame("由於生活壓力太大，身體同心靈超出負荷……");
             return;
         }
 
@@ -354,7 +412,7 @@
             document.getElementById('choicesContainer').innerHTML = choicesHTML;
             document.getElementById('actionPanel').style.display = 'none';
         } else {
-            document.getElementById('storyText').innerText = `今年過得好寫意，畫左幅靚水彩畫，又聽左靚歌。`;
+            document.getElementById('storyText').innerText = `今年在${player.district}過得好平淡，如常生活，食左個茶餐廳常餐。`;
             document.getElementById('choicesContainer').innerHTML = '';
             document.getElementById('actionPanel').style.display = 'block';
         }
@@ -374,34 +432,18 @@
         document.getElementById('actionPanel').style.display = 'block';
 
         if (player.health <= 0 || player.happiness <= 0) {
-            endGame("人生中場休息，準備重新投胎！");
+            endGame("人生告一段落，準備重新投胎！");
         }
     }
 
     function endGame(reason) {
         document.getElementById('modalTitle').innerText = "Game Over";
-        document.getElementById('modalDesc').innerText = `${reason}\n你在香港生活左 ${player.age} 年，總共儲左 $${player.wealth.toLocaleString()}。`;
+        document.getElementById('modalDesc').innerText = `${reason}\n你在香港 (${player.district}) 生活左 ${player.age} 年，總共儲左 $${player.wealth.toLocaleString()}。`;
         document.getElementById('gameOverModal').style.display = 'flex';
     }
 
-    function restartGame() {
-        player = {
-            name: "Kong Hoi Yau",
-            age: 0,
-            year: 2026,
-            health: 100,
-            happiness: 80,
-            smart: 50,
-            wealth: 5000,
-            status: "初生嬰兒"
-        };
-        document.getElementById('gameOverModal').style.display = 'none';
-        document.getElementById('storyText').innerText = "你喺香港順利出世喇！充滿藝術細胞同音樂天分嘅你，註定有一段多姿多采嘅人生。";
-        document.getElementById('actionPanel').style.display = 'block';
-        updateUI();
-    }
-
-    updateUI();
+    // 初始化第一局
+    initNewGame();
 </script>
 
 </body>
