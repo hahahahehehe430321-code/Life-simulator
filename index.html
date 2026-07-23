@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港人生模擬器 - 終極互動版</title>
+    <title>香港人生模擬器 - 絕對不重複多元版</title>
     <style>
         :root {
             --primary-color: #1e3799;
@@ -273,7 +273,7 @@
 <div class="container">
     <header>
         <h1>🇭🇰 香港人生模擬器</h1>
-        <p>自由決定 • 隨機事件 • 百歲長壽人生</p>
+        <p>絕對不重複 • 多元化抉擇 • 百歲長壽人生</p>
     </header>
 
     <!-- 頂部目錄導航 -->
@@ -376,6 +376,7 @@
         smart: 50,
         wealth: 5000,
         status: "初生嬰兒",
+        usedEventIds: [], // 記錄已經出過嘅事件ID，保證絕對不重複
         relations: [
             { name: "嚴厲阿媽", relation: "母親", affection: 70, desc: "成日提醒你要注意學業同健康。" },
             { name: "慈祥老豆", relation: "父親", affection: 75, desc: "對你好支持，得閒會帶你周圍去。" },
@@ -383,83 +384,107 @@
         ]
     };
 
-    // 豐富的各年齡層事件庫（隨機發生，玩家必須作出選擇）
+    // 超豐富、多元化、涵蓋香港各種生活情境嘅事件庫 (帶有獨特 ID)
     const lifeEvents = [
         // 幼兒與小學期 (1-11歲)
         {
-            minAge: 1, maxAge: 11,
-            text: "今日放假，老豆阿媽帶你去屋邨樓下嘅公園玩。見到隔離的小朋友想爭你嘅玩具。",
+            id: "e1", minAge: 1, maxAge: 11,
+            text: "今日去咗屋邨樓下嘅公園玩瀡滑梯，見到有小朋友唔小心跌親喊緊。",
             choices: [
-                { text: "大方分享玩具，一齊開心玩", effect: { happiness: 5, health: 2 } },
-                { text: "扭計喊出嚟，一定要搶返個主導權", effect: { happiness: -2, smart: 2 } }
+                { text: "立刻拎出袋入面嘅紙巾慰問對方", effect: { happiness: 5, health: 2 } },
+                { text: "自己照玩滑梯，當睇唔到算數", effect: { smart: 2 } }
             ]
         },
         {
-            minAge: 6, maxAge: 11,
-            text: "學校今日派默書簿，你竟然攞左個高分，隔離同學問你點溫書。",
+            id: "e2", minAge: 6, maxAge: 11,
+            text: "學校舉辦小學手作創意勞作比賽，老師叫大家利用環保廢料進行創作。",
             choices: [
-                { text: "毫無保留咁教識對方，建立友誼", effect: { smart: 5, happiness: 5 } },
-                { text: "神祕笑笑聲話自己冇溫過書", effect: { smart: 3, happiness: 2 } }
+                { text: "花心思整咗個精緻嘅環保小模型參賽", effect: { smart: 8, happiness: 5 } },
+                { text: "求其交行貨，慳番啲時間去玩", effect: { happiness: 2 } }
             ]
         },
         // 中學期 (12-17歲)
         {
-            minAge: 12, maxAge: 17,
-            text: "今日放學經過士多，見到有新款心儀嘅手作工具同盲盒，但係零用錢唔係好夠。",
+            id: "e3", minAge: 12, maxAge: 17,
+            text: "放學經過信和中心，見到心儀歌手嘅限量版CD同演唱會應援周邊，心大心細。",
             choices: [
-                { text: "忍痛用晒呢個星期嘅飯錢去買", effect: { wealth: -100, happiness: 15 } },
-                { text: "死慳死抵將錢儲起，返屋企自己用廢料DIY", effect: { wealth: 50, smart: 5, happiness: 5 } }
+                { text: "忍痛用晒呢個月嘅零用錢買落收藏", effect: { wealth: -200, happiness: 15 } },
+                { text: "理性放棄，留番啲錢買格仔餅食", effect: { wealth: 30, happiness: 5 } }
             ]
         },
         {
-            minAge: 15, maxAge: 18,
-            text: "面臨地獄級嘅 DSE 考試，溫書溫到個人好大壓力和疲倦。",
+            id: "e4", minAge: 14, maxAge: 18,
+            text: "學校陸運會當日陽光普照，班長問你有冇興趣代表班別參加田徑比賽。",
             choices: [
-                { text: "通宵達旦狂溫，誓要考入三大", effect: { smart: 15, health: -10, happiness: -10 } },
-                { text: "適可而止，得閒去彈下結他同聽歌放鬆", effect: { happiness: 15, smart: 3, health: 5 } }
+                { text: "一口答應落場狂奔，挑戰自我", effect: { health: 10, happiness: 10 } },
+                { text: "耍手擰頭話自己主力喺台下打氣", effect: { happiness: 3 } }
+            ]
+        },
+        {
+            id: "e5", minAge: 15, maxAge: 18,
+            text: "面臨地獄級嘅 DSE 中學文憑試，溫書溫到個人心灰意冷。",
+            choices: [
+                { text: "閉關通宵狂操Past Paper，務求拎高分", effect: { smart: 15, health: -8, happiness: -10 } },
+                { text: "聽住歌彈下結他/畫陣畫，放鬆身心", effect: { happiness: 12, health: 5, smart: 3 } }
             ]
         },
         // 大學與青年期 (18-29歲)
         {
-            minAge: 18, maxAge: 29,
-            text: "大學莊期或者兼職返工忙到天昏地暗，老細/組員突然要求你今個週末OT幫手趕死線。",
+            id: "e6", minAge: 18, maxAge: 29,
+            text: "大學莊期或者兼職返工忙到癲，朋友突然約你去西貢行山睇日落兼露營。",
             choices: [
-                { text: "頂硬上直踩OT，賺多啲外快同經驗", effect: { wealth: 2000, health: -8, happiness: -5 } },
-                { text: "拒絕OT，放假去行山睇日落嘆Me Time", effect: { health: 10, happiness: 15, wealth: -100 } }
+                { text: "應承去！親親大自然放鬆叉電", effect: { health: 12, happiness: 15, wealth: -100 } },
+                { text: "婉拒邀請，留喺房趕死線同做手作", effect: { smart: 8, health: -5, happiness: -3 } }
             ]
         },
         {
-            minAge: 22, maxAge: 35,
-            text: "同朋友夾份搞緊一場小型手作市集展覽，但人手同資金有啲緊絀。",
+            id: "e7", minAge: 20, maxAge: 32,
+            text: "你嘗試喺網上搞緊自己嘅手作網店，第一日就收到第一個陌生客嘅查詢同訂單！",
             choices: [
-                { text: "落力宣傳同擺檔，務求做到最好", effect: { wealth: 1500, smart: 8, happiness: 12 } },
-                { text: "順其自然，當作是一次普通經驗", effect: { happiness: 5 } }
-            ]
-        },
-        // 成年打工與中年期 (30-55歲)
-        {
-            minAge: 30, maxAge: 55,
-            text: "公司內部有得升職，但代價係要調去工作量極大嘅核心部門，經常要夜歸。",
-            choices: [
-                { text: "接受挑戰，為前途同高薪搏盡", effect: { wealth: 8000, smart: 10, health: -12, happiness: -8 } },
-                { text: "拒絕升職，選擇穩定嘅工作享受生活", effect: { happiness: 10, health: 5 } }
+                { text: "用心手作包裝，仲手寫感謝卡送畀客", effect: { smart: 10, wealth: 500, happiness: 15 } },
+                { text: "用最快速度寄出包裹算數", effect: { wealth: 400, happiness: 5 } }
             ]
         },
         {
-            minAge: 35, maxAge: 60,
-            text: "屋企層舊樓開始老化，水喉出現滲水問題，需要一大筆錢去維修。",
+            id: "e8", minAge: 22, maxAge: 35,
+            text: "返工公司老細突然話今日部門要OT到深夜，仲要冇補水補貼。",
             choices: [
-                { text: "拿出一大筆積蓄徹底大翻新", effect: { wealth: -15000, happiness: 5, health: 5 } },
-                { text: "自己買材料簡單補救算數", effect: { wealth: -2000, smart: 5, happiness: -5 } }
+                { text: "據理力爭夠鐘即刻走人去嘆凍檸茶", effect: { happiness: 10, wealth: -20 } },
+                { text: "默默死忍繼續OT，費事得罪老細", effect: { wealth: 300, health: -10, happiness: -10 } }
+            ]
+        },
+        // 中年期 (35-55歲)
+        {
+            id: "e9", minAge: 35, maxAge: 55,
+            text: "屋企老舊唐樓/公屋嘅水喉突然嚴重漏水，搞到成屋都係水，要即刻處理。",
+            choices: [
+                { text: "搵專業師傅徹底大維修，洗一大筆錢", effect: { wealth: -8000, happiness: 2, health: 3 } },
+                { text: "自己上網睇教學買材料落手修理", effect: { wealth: -1000, smart: 8, happiness: -5, health: -3 } }
+            ]
+        },
+        {
+            id: "e10", minAge: 40, maxAge: 60,
+            text: "公司內部有架構重組，問你想唔想轉去新嘅海外拓展部門，但要經常搭飛機出差。",
+            choices: [
+                { text: "接受挑戰，擴闊視野兼賺取高薪", effect: { wealth: 12000, smart: 12, health: -10, happiness: -5 } },
+                { text: "留在香港原部門，穩陣過平淡生活", effect: { happiness: 8, health: 5 } }
             ]
         },
         // 老年期 (60-99歲)
         {
-            minAge: 60, maxAge: 95,
-            text: "已經到了退休年齡，今日落公園晨運，見到一班老友記喺度耍太極同傾古仔。",
+            id: "e11", minAge: 60, maxAge: 95,
+            text: "終於榮休喇！今日落到屋邨公園晨運，老友記叫你一齊加入太極晨運班。",
             choices: [
-                { text: "加入行列一齊耍太極，過寫意晚年", effect: { health: 10, happiness: 12 } },
-                { text: "返屋企繼續研究自己喜愛嘅畫畫同手作", effect: { smart: 5, happiness: 15 } }
+                { text: "每日準時去耍太極，強身健體", effect: { health: 15, happiness: 10 } },
+                { text: "留在家中重拾後生時鍾意嘅畫畫同手作", effect: { smart: 5, happiness: 15, health: 5 } }
+            ]
+        },
+        {
+            id: "e12", minAge: 65, maxAge: 98,
+            text: "屋企人提議趁周末一家人去飲茶，順便去海濱長廊散步影全家福。",
+            choices: [
+                { text: "全家總動員開開心心去飲茶影相", effect: { happiness: 20, health: 5 } },
+                { text: "嫌遠想留喺屋企休息，婉拒好意", effect: { happiness: -2, health: -2 } }
             ]
         }
     ];
@@ -473,7 +498,7 @@
             ]
         },
         "慈祥老豆": {
-            intro: "仔/女，最近工作同生活成唔成? 記住Liza唱嗰首……抖下先最緊要。",
+            intro: "仔/女，最近工作同生活成唔成? 抖下先最緊要，得閒老豆車你去兜風。",
             options: [
                 { text: "「老豆放心，我好識得平衡生活架！」", reply: "「後生仔最緊要係身體健康，有咩唔開心隨時同老豆講。」", effect: { happiness: 10, health: 2 } },
                 { text: "「有啲攰呀，不過好快放假喇。」", reply: "「咁放假老豆車你去d靚地方行下，鬆一鬆先！」", effect: { happiness: 12 } }
@@ -483,8 +508,7 @@
             intro: "喂！幾時得閒出黎敘舊，定係上Discord開局打返鋪機？",
             options: [
                 { text: "「今晚得閒！上網開局見！」", reply: "「正！今晚一定要打返夠本！」", effect: { happiness: 12 } },
-                `「最近忙緊自己嘅興趣同手作，下次先啦！」`,
-                { reply: "「嘩你又搞咁多創作？得啦咁你忙先，下次再約！」", effect: { smart: 3, happiness: 5 } }
+                { text: "「最近忙緊自己嘅興趣同手作，下次先啦！」", reply: "「嘩你又搞咁多創作？得啦咁你忙先，下次再約！」", effect: { smart: 3, happiness: 5 } }
             ]
         }
     };
@@ -523,6 +547,7 @@
             smart: 50,
             wealth: randomDistObj.wealthMod,
             status: "初生嬰兒",
+            usedEventIds: [],
             relations: [
                 { name: "嚴厲阿媽", relation: "母親", affection: 70, desc: "成日提醒你要注意學業同健康。" },
                 { name: "慈祥老豆", relation: "父親", affection: 75, desc: "對你好支持，得閒會帶你周圍去。" },
@@ -571,12 +596,12 @@
         else if (player.age < 60) player.status = "香港打工仔";
         else player.status = "榮休長者";
 
-        // 自然年老老化機制：隨年齡增長，身體健康自然會有輕微耗損，但只要好好抉擇就可以活到高齡
+        // 自然老化機制
         let naturalDecay = player.age > 60 ? Math.floor(Math.random() * 4) + 1 : Math.floor(Math.random() * 2);
         player.health = Math.max(0, Math.min(100, player.health - naturalDecay));
         player.happiness = Math.max(0, Math.min(100, player.happiness + (Math.floor(Math.random() * 5) - 2)));
 
-        // 檢查死亡條件（健康或快樂歸零，或者正常自然老死：年齡去到 80 - 100 歲隨機自然終結）
+        // 檢查死亡條件
         if (player.health <= 0 || player.happiness <= 0) {
             endGame("由於生活壓力超出負荷或健康惡化，你的人生在香港畫上句號……");
             return;
@@ -586,11 +611,15 @@
             return;
         }
 
-        // 篩選符合現時年齡層嘅事件
-        let availableEvents = lifeEvents.filter(e => player.age >= e.minAge && player.age <= e.maxAge);
+        // 篩選出合乎年齡 且「未曾使用過 (絕對不重複)」嘅事件
+        let availableEvents = lifeEvents.filter(e => 
+            player.age >= e.minAge && player.age <= e.maxAge && !player.usedEventIds.includes(e.id)
+        );
         
-        if (availableEvents.length > 0 && Math.random() < 0.85) {
+        if (availableEvents.length > 0 && Math.random() < 0.9) {
             let ev = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+            player.usedEventIds.push(ev.id); // 記錄此事件ID，以後絕不重複
+
             document.getElementById('storyText').innerText = `【${player.age}歲這年】 ${ev.text}`;
             
             let choicesHTML = '';
@@ -600,12 +629,12 @@
             document.getElementById('choicesContainer').innerHTML = choicesHTML;
             document.getElementById('nextYearBtn').style.display = 'none';
         } else {
-            // 平淡日常句式
+            // 多元化日常敘事庫
             const routineStories = [
-                `今年喺${player.district}過得好平穩。朝早如常搭港鐵返工返學，晏晝喺附近茶餐廳食左個常餐，生活踏實。`,
+                `今年喺${player.district}過得好平穩。朝早搭港鐵返工返學，晏晝喺茶餐廳食左個常餐，生活踏實。`,
                 `今年天氣唔錯，你喺${player.district}屋企附近同朋友行左陣街，買左件心儀嘅小飾物，心情愉快。`,
                 `今年工作同生活都好順利，放假時留喺屋企煲劇、聼歌同埋享受難得嘅Me Time。`,
-                `今年喺${player.district}經歷左轉變，生活節奏雖然快，但你都慢慢適應並享受其中。`
+                `今年喺${player.district}開展左新嘗試，生活節奏雖然快，但你都慢慢適應並享受其中。`
             ];
             let randomRoutine = `【${player.age}歲這年】 ` + routineStories[Math.floor(Math.random() * routineStories.length)];
             
