@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港人生模擬器 - 隨機命運版</title>
+    <title>香港人生模擬器 - 完整互動版</title>
     <style>
         :root {
+            --primary-color: #1e3799;
             --hk-red: #de2910;
-            --hk-gold: #ffde00;
             --bg-color: #f0f2f5;
             --card-bg: #ffffff;
             --text-main: #333333;
@@ -30,44 +30,77 @@
         header {
             background: linear-gradient(135deg, #1e3799, #0c2461);
             color: white;
-            padding: 25px;
+            padding: 20px;
             text-align: center;
         }
         header h1 {
             margin: 0 0 5px 0;
-            font-size: 26px;
+            font-size: 24px;
         }
         header p {
             margin: 0;
             opacity: 0.8;
-            font-size: 14px;
+            font-size: 13px;
         }
+        /* 導航目錄 */
+        .nav-tabs {
+            display: flex;
+            background: #dfe4ea;
+            border-bottom: 1px solid #ced6e0;
+        }
+        .nav-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            color: #57606f;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        .nav-tab.active {
+            background: white;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            min-height: 350px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 狀態欄 */
         .stats-panel {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            padding: 20px;
+            padding: 15px 20px;
             background: #f8f9fa;
             border-bottom: 1px solid #eee;
         }
         .stat-card {
             background: white;
-            padding: 12px 15px;
-            border-radius: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .stat-label {
-            font-size: 13px;
+            font-size: 12px;
             color: #666;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             display: flex;
             justify-content: space-between;
         }
         .progress-bar-container {
             width: 100%;
             background: #e9ecef;
-            height: 8px;
-            border-radius: 4px;
+            height: 6px;
+            border-radius: 3px;
             overflow: hidden;
         }
         .progress-bar {
@@ -80,14 +113,14 @@
         .bar-wealth { background-color: #e67e22; }
 
         .info-panel {
-            padding: 15px 20px;
+            padding: 12px 20px;
             background: #fff;
             border-bottom: 1px solid #eee;
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
             color: #2c3e50;
         }
         .info-row {
@@ -95,19 +128,16 @@
             justify-content: space-between;
         }
 
-        .story-container {
-            padding: 25px;
-            min-height: 180px;
-        }
+        /* 故事區 */
         .story-year {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--hk-red);
             font-weight: bold;
             margin-bottom: 8px;
             text-transform: uppercase;
         }
         .story-text {
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
             margin-bottom: 20px;
         }
@@ -120,9 +150,9 @@
             background: #ffffff;
             border: 2px solid #3498db;
             color: #2980b9;
-            padding: 12px 18px;
+            padding: 10px 15px;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             text-align: left;
@@ -133,28 +163,82 @@
             color: white;
             transform: translateY(-2px);
         }
-        .action-panel {
-            padding: 20px;
-            background: #fdfdfd;
-            border-top: 1px solid #eee;
-            text-align: center;
-        }
         .next-year-btn {
             background: #27ae60;
             color: white;
             border: none;
-            padding: 14px 30px;
-            font-size: 18px;
+            padding: 12px 20px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            transition: background 0.2s;
+            margin-top: 15px;
+        }
+        .next-year-btn:hover { background: #219653; }
+
+        /* 人際關係頁面 */
+        .relation-card {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .relation-name { font-weight: bold; font-size: 15px; color: #2c3e50; }
+        .relation-desc { font-size: 13px; color: #666; margin-top: 3px; }
+
+        /* 聊天室頁面 */
+        .chat-list { display: flex; flex-direction: column; gap: 10px; }
+        .chat-contact-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            color: #2c3e50;
             transition: background 0.2s;
         }
-        .next-year-btn:hover {
-            background: #219653;
+        .chat-contact-btn:hover { background: #f1f2f6; }
+        
+        .chat-window { display: none; }
+        .chat-box {
+            background: #f1f2f6;
+            height: 220px;
+            border-radius: 8px;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
         }
+        .chat-bubble {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .chat-bubble.me { background: #3498db; color: white; align-self: flex-end; }
+        .chat-bubble.other { background: white; color: #333; align-self: flex-start; border: 1px solid #ddd; }
+        .back-chat-btn {
+            background: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        /* 彈窗 */
         .modal {
             display: none;
             position: fixed;
@@ -172,7 +256,6 @@
             max-width: 400px;
             width: 90%;
         }
-        .modal-content h2 { margin-top: 0; color: var(--hk-red); }
         .restart-btn {
             background: #e74c3c;
             color: white;
@@ -190,10 +273,17 @@
 <div class="container">
     <header>
         <h1>🇭🇰 香港人生模擬器</h1>
-        <p>隨機投胎 • 體驗完全唔同嘅香港地道人生</p>
+        <p>生活、人際、聊天互動版</p>
     </header>
 
-    <!-- 狀態欄 -->
+    <!-- 頂部目錄導航 -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('home')">🏠 主頁</button>
+        <button class="nav-tab" onclick="switchTab('relations')">👥 人際關係</button>
+        <button class="nav-tab" onclick="switchTab('chat')">💬 聊天室</button>
+    </div>
+
+    <!-- 狀態欄 (全域顯示) -->
     <div class="stats-panel">
         <div class="stat-card">
             <div class="stat-label"><span>❤️ 健康</span><span id="statHealthNum">100%</span></div>
@@ -208,47 +298,65 @@
             <div class="progress-bar-container"><div id="barSmart" class="progress-bar bar-smart" style="width: 50%;"></div></div>
         </div>
         <div class="stat-card">
-            <div class="stat-label"><span>💰 財富 (港幣)</span><span id="statWealthNum">$5,000</span></div>
+            <div class="stat-label"><span>💰 財富</span><span id="statWealthNum">$5,000</span></div>
             <div class="progress-bar-container"><div id="barWealth" class="progress-bar bar-wealth" style="width: 20%;"></div></div>
         </div>
     </div>
 
-    <!-- 基本資料 (隨機名字與地區) -->
     <div class="info-panel">
         <div class="info-row">
             <span id="infoName">姓名：--</span>
             <span id="infoDistrict">地區：--</span>
         </div>
         <div class="info-row">
-            <span id="infoAge">年齡：0 歲 (初生嬰兒)</span>
+            <span id="infoAge">年齡：0 歲</span>
             <span id="infoHousing">住屋：--</span>
         </div>
     </div>
 
-    <!-- 故事與事件區 -->
-    <div class="story-container">
+    <!-- 頁面 1：主頁 (人生模擬) -->
+    <div id="tab-home" class="tab-content active">
         <div class="story-year" id="storyYear">年份：2026年</div>
         <div class="story-text" id="storyText">正在隨機投胎中……</div>
         <div class="choices-container" id="choicesContainer"></div>
+        <button class="next-year-btn" id="nextYearBtn" onclick="nextYear()">⏩ 大一歲 (進入下年)</button>
     </div>
 
-    <!-- 下一年按鈕 -->
-    <div class="action-panel" id="actionPanel">
-        <button class="next-year-btn" id="nextYearBtn" onclick="nextYear()">⏩ 大一歲 (進入下年)</button>
+    <!-- 頁面 2：人際關係 -->
+    <div id="tab-relations" class="tab-content">
+        <h3>👥 現實人際網絡</h3>
+        <div id="relationsList">
+            <!-- 動態生成 -->
+        </div>
+    </div>
+
+    <!-- 頁面 3：聊天室 -->
+    <div id="tab-chat" class="tab-content">
+        <div id="chatMenu">
+            <h3>💬 選擇傾計對象：</h3>
+            <div class="chat-list" id="chatContactList">
+                <!-- 動態生成聯絡人 -->
+            </div>
+        </div>
+        
+        <div id="chatRoom" class="chat-window">
+            <button class="back-chat-btn" onclick="closeChat()">⬅ 返回聯絡人列表</button>
+            <div class="chat-box" id="chatBox"></div>
+            <div class="choices-container" id="chatChoices"></div>
+        </div>
     </div>
 </div>
 
 <!-- 遊戲結束彈窗 -->
 <div class="modal" id="gameOverModal">
     <div class="modal-content">
-        <h2 id="modalTitle">遊戲結束</h2>
+        <h2 id="modalTitle" style="color:var(--hk-red);">遊戲結束</h2>
         <p id="modalDesc">你嘅香港人生到此為止。</p>
         <button class="restart-btn" onclick="initNewGame()">重新投胎</button>
     </div>
 </div>
 
 <script>
-    // 隨機資料庫
     const surnames = ["陳", "張", "李", "劉", "黃", "周", "吳", "鄭", "何", "馬", "郭", "梁", "林", "曾", "羅", "潘", "謝", "唐", "許", "容"];
     const givenNames = ["家豪", "美儀", "俊傑", "芷晴", "頌恩", "梓軒", "凱婷", "樂賢", "詩雅", "朗晴", "浩然", "曉彤", "健宏", "思敏", "柏熹", "詠琪", "彥廷", "若希", "海澄", "悅彤"];
     
@@ -258,11 +366,7 @@
         { name: "觀塘", housing: "舊樓", wealthMod: 3000 },
         { name: "灣仔", housing: "唐樓", wealthMod: 7000 },
         { name: "將軍澳", housing: "私樓", wealthMod: 10000 },
-        { name: "屯門", housing: "公屋", wealthMod: 3500 },
-        { name: "西營盤", housing: "舊樓", wealthMod: 6000 },
-        { name: "旺角", housing: "劏房", wealthMod: 2000 },
-        { name: "太古", housing: "私樓", wealthMod: 12000 },
-        { name: "荃灣", housing: "居屋", wealthMod: 6000 }
+        { name: "屯門", housing: "公屋", wealthMod: 3500 }
     ];
 
     let player = {
@@ -275,67 +379,60 @@
         happiness: 80,
         smart: 50,
         wealth: 5000,
-        status: "初生嬰兒"
+        status: "初生嬰兒",
+        relations: [
+            { name: "嚴厲阿媽", relation: "母親", affection: 70, desc: "成日催你溫書同埋叫你飲涼茶。" },
+            { name: "慈祥老豆", relation: "父親", affection: 75, desc: "得閒會買格仔餅或者麥當勞氹你開心。" },
+            { name: "中學老友明仔", relation: "朋友", affection: 60, desc: "成日同你一齊打機同夾band嘅好兄弟。" }
+        ]
     };
 
-    const events = [
-        {
-            minAge: 3, maxAge: 6,
-            text: "你開始喺屋企附近嘅地區盲鐘鐘咁學行路，阿媽每日帶你去公園玩滑梯。",
-            choices: [
-                { text: "同隔離街嘅小朋友開心爭玩具玩", effect: { happiness: 10, smart: 2 } },
-                { text: "扭計要食麥當勞開心樂園餐", effect: { happiness: 15, wealth: -100 } }
+    // 聊天室劇情數據
+    const chatData = {
+        "嚴厲阿媽": {
+            intro: "喂，你陣間得唔得閒呀？溫咗書未先？",
+            options: [
+                { text: "「啱啱溫完喇，一陣想去夾陣band放鬆。」", reply: "「又掛住玩！讀書緊要呀，陣間記得飲埋碗廿四味！」", effect: { happiness: 5, health: 5 } },
+                { text: "「好攰呀，想抖陣先……」", reply: "「知你攰架啦，但係前途重要呀。拿，雪櫃有舊叉燒飯，叮嚟食啦。」", effect: { happiness: 2 } }
             ]
         },
-        {
-            minAge: 7, maxAge: 11,
-            text: "升咗小學喇！每日要對住大量功課同測驗，你點面對？",
-            choices: [
-                { text: "乖乖地溫書爭取好成績", effect: { smart: 15, happiness: -10 } },
-                { text: "放學即刻去士多買汽水同朋友玩", effect: { happiness: 15, smart: -5 } }
+        "慈祥老豆": {
+            intro: "仔/女，聽日放假使唔使老豆車你去銅鑼灣呀？",
+            options: [
+                { text: "「好呀！順便想去買啲手作材料同畫具。」", reply: "「冇問題！後生女/仔有藝術天分係好事，老豆支持你！」", effect: { happiness: 10 } },
+                { text: "「唔使喇，約左朋友去溜冰同踩板。」", reply: "「咁自己小心安全呀，陣間過馬路唔好睇手機。」", effect: { happiness: 8, health: 2 } }
             ]
         },
-        {
-            minAge: 12, maxAge: 15,
-            text: "中學派位結果出爐，青春期嘅你開始有自己嘅興趣同煩惱。",
-            choices: [
-                { text: "專心學畫畫或者夾band玩音樂", effect: { happiness: 20, smart: 5 } },
-                { text: "拼命補習追貼名校進度", effect: { smart: 10, wealth: -500, happiness: -10 } }
-            ]
-        },
-        {
-            minAge: 16, maxAge: 18,
-            text: "迎黎地獄級嘅 **DSE香港中學文憑試**！",
-            choices: [
-                { text: "日夜苦讀，目標入三大", effect: { smart: 25, happiness: -20, health: -10 } },
-                { text: "聽住歌hea讀，順其自然", effect: { happiness: 15, smart: -5 } }
-            ]
-        },
-        {
-            minAge: 19, maxAge: 25,
-            text: "踏入社會或者讀大學，為左賺零用錢，你開始做兼職（例如補習、麥當勞、Kidult Academy）。",
-            choices: [
-                { text: "去補習社 ($75/hr) 教學生賺錢", effect: { wealth: 2500, smart: 5 } },
-                { text: "去麥當勞 ($60/hr) 返工嘆休息時段", effect: { wealth: 2000, health: -5 } },
-                { text: "去 Kidult Academy ($65/hr) 開心兼職", effect: { wealth: 2200, happiness: 10 } }
-            ]
-        },
-        {
-            minAge: 26, maxAge: 60,
-            text: "出黎做野幾年，香港生活指數高，日日要面對工作壓力。",
-            choices: [
-                { text: "瘋狂OT搏上位，儲錢想上車買樓", effect: { wealth: 15000, health: -15, happiness: -15 } },
-                { text: "做個「佛系打工仔」，放假去行山同開live打機", effect: { happiness: 20, wealth: 1000 } }
+        "中學老友明仔": {
+            intro: "喂！今晚得唔得閒開discord連線打返鋪機？",
+            options: [
+                { text: "「好呀！陣間夜晚九點見！」", reply: "「正！今晚一定要打爆機，場場都Carry你！」", effect: { happiness: 12 } },
+                { text: "「唔得呀，我要執靚啲Concert應援手作，好忙。」", reply: "「嘩你又整手作？得啦咁你忙先，下次先打！」", effect: { smart: 2, happiness: 5 } }
             ]
         }
-    ];
+    };
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        if (tabId === 'home') {
+            document.querySelector('.nav-tab:nth-child(1)').classList.add('active');
+            document.getElementById('tab-home').classList.add('active');
+        } else if (tabId === 'relations') {
+            document.querySelector('.nav-tab:nth-child(2)').classList.add('active');
+            document.getElementById('tab-relations').classList.add('active');
+            renderRelations();
+        } else if (tabId === 'chat') {
+            document.querySelector('.nav-tab:nth-child(3)').classList.add('active');
+            document.getElementById('tab-chat').classList.add('active');
+            renderChatContacts();
+        }
+    }
 
     function initNewGame() {
-        // 隨機抽名字
         let randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
         let randomGiven = givenNames[Math.floor(Math.random() * givenNames.length)];
-        
-        // 隨機抽地區與住屋
         let randomDistObj = districts[Math.floor(Math.random() * districts.length)];
 
         player = {
@@ -348,13 +445,20 @@
             happiness: 80,
             smart: 50,
             wealth: randomDistObj.wealthMod,
-            status: "初生嬰兒"
+            status: "初生嬰兒",
+            relations: [
+                { name: "嚴厲阿媽", relation: "母親", affection: 70, desc: "成日提醒你要注意學業同健康。" },
+                { name: "慈祥老豆", relation: "父親", affection: 75, desc: "對你好支持，得閒會帶你周圍去。" },
+                { name: "老友明仔", relation: "朋友", affection: 60, desc: "同你好啱傾嘅中學好友。" }
+            ]
         };
 
         document.getElementById('gameOverModal').style.display = 'none';
-        document.getElementById('storyText').innerText = `你喺香港嘅【${player.district}】順利出世喇！屋企住喺【${player.housing}】，父母望住呢個初生BB，滿心歡喜。`;
-        document.getElementById('actionPanel').style.display = 'block';
+        document.getElementById('storyText').innerText = `你喺香港嘅【${player.district}】順利出世喇！屋企住喺【${player.housing}】，父母滿心歡喜咁迎接你嘅到來。`;
+        document.getElementById('choicesContainer').innerHTML = '';
+        document.getElementById('nextYearBtn').style.display = 'block';
         updateUI();
+        switchTab('home');
     }
 
     function updateUI() {
@@ -377,72 +481,107 @@
         document.getElementById('storyYear').innerText = `年份：${player.year}年`;
     }
 
-    function checkAgeStatus() {
-        if (player.age < 3) player.status = "初生嬰兒";
-        else if (player.age < 6) player.status = "幼稚園學童";
-        else if (player.age < 12) player.status = "小學雞";
-        else if (player.age < 18) player.status = "中學生";
-        else if (player.age < 25) { player.status = "斜槓族兼職達人"; }
-        else { player.status = "香港打工仔 / 創作者"; }
-    }
-
     function nextYear() {
         player.age++;
         player.year++;
-        checkAgeStatus();
+        
+        if (player.age < 3) player.status = "初生嬰兒";
+        else if (player.age < 7) player.status = "幼稚園學童";
+        else if (player.age < 12) player.status = "小學雞";
+        else if (player.age < 18) player.status = "中學生";
+        else if (player.age < 25) player.status = "斜槓族 / 大學生";
+        else player.status = "香港打工仔";
 
         player.health = Math.max(0, Math.min(100, player.health - Math.floor(Math.random() * 2)));
         player.happiness = Math.max(0, Math.min(100, player.happiness + (Math.floor(Math.random() * 5) - 2)));
 
         if (player.health <= 0 || player.happiness <= 0) {
-            endGame("由於生活壓力太大，身體同心靈超出負荷……");
+            endGame("由於生活壓力太大，身體與心靈超出負荷……");
             return;
         }
 
-        let availableEvents = events.filter(e => player.age >= e.minAge && player.age <= e.maxAge);
+        const routineStories = [
+            `今年喺${player.district}過得好充實。朝早趕住搭港鐵返工返學，晏晝喺茶餐廳食左個常餐，味道唔錯。`,
+            `今年屋企附近開咗間新嘅文青咖啡室，你得閒去咗打卡，順便畫咗幾幅水彩畫。`,
+            `今年天氣有啲反覆，你喺${player.district}同朋友行左陣街，買左件心儀嘅小飾物。`,
+            `今年生活好平穩，放假留喺屋企煲劇、彈下結他同聽歌，享受Me Time。`
+        ];
+        let randomRoutine = routineStories[Math.floor(Math.random() * routineStories.length)];
         
-        if (availableEvents.length > 0 && Math.random() < 0.75) {
-            let ev = availableEvents[Math.floor(Math.random() * availableEvents.length)];
-            document.getElementById('storyText').innerText = ev.text;
-            
-            let choicesHTML = '';
-            ev.choices.forEach((c) => {
-                choicesHTML += `<button class="choice-btn" onclick='makeChoice(${JSON.stringify(c.effect)})'>${c.text}</button>`;
-            });
-            document.getElementById('choicesContainer').innerHTML = choicesHTML;
-            document.getElementById('actionPanel').style.display = 'none';
-        } else {
-            document.getElementById('storyText').innerText = `今年在${player.district}過得好平淡，如常生活，食左個茶餐廳常餐。`;
-            document.getElementById('choicesContainer').innerHTML = '';
-            document.getElementById('actionPanel').style.display = 'block';
-        }
-
+        document.getElementById('storyText').innerText = randomRoutine;
+        document.getElementById('choicesContainer').innerHTML = '';
         updateUI();
     }
 
-    function makeChoice(effect) {
-        if (effect.health) player.health = Math.max(0, Math.min(100, player.health + effect.health));
-        if (effect.happiness) player.happiness = Math.max(0, Math.min(100, player.happiness + effect.happiness));
-        if (effect.smart) player.smart = Math.max(0, Math.min(100, player.smart + effect.smart));
-        if (effect.wealth) player.wealth += effect.wealth;
+    function renderRelations() {
+        let html = '';
+        player.relations.forEach(r => {
+            html += `
+                <div class="relation-card">
+                    <div class="relation-name">${r.name} (${r.relation})</div>
+                    <div class="relation-desc">${r.desc}</div>
+                    <div style="font-size:12px; color:#e67e22; margin-top:5px;">❤️ 好感度：${r.affection}%</div>
+                </div>
+            `;
+        });
+        document.getElementById('relationsList').innerHTML = html;
+    }
+
+    function renderChatContacts() {
+        let html = '';
+        player.relations.forEach(r => {
+            html += `<button class="chat-contact-btn" onclick="openChat('${r.name}')">💬 同 ${r.name} 傾計</button>`;
+        });
+        document.getElementById('chatContactList').innerHTML = html;
+        document.getElementById('chatMenu').style.display = 'block';
+        document.getElementById('chatRoom').style.display = 'none';
+    }
+
+    function openChat(name) {
+        document.getElementById('chatMenu').style.display = 'none';
+        document.getElementById('chatRoom').style.display = 'block';
+        
+        let chatBox = document.getElementById('chatBox');
+        chatBox.innerHTML = `<div class="chat-bubble other"><b>${name}：</b>${chatData[name].intro}</div>`;
+
+        let choicesHTML = '';
+        chatData[name].options.forEach(opt => {
+            choicesHTML += `<button class="choice-btn" onclick="sendChat('${name}', '${opt.text}', '${opt.reply}', ${JSON.stringify(opt.effect)})">${opt.text}</button>`;
+        });
+        document.getElementById('chatChoices').innerHTML = choicesHTML;
+    }
+
+    function sendChat(name, myText, replyText, effect) {
+        let chatBox = document.getElementById('chatBox');
+        chatBox.innerHTML += `<div class="chat-bubble me"><b>你：</b>${myText}</div>`;
+        
+        setTimeout(() => {
+            chatBox.innerHTML += `<div class="chat-bubble other"><b>${name}：</b>${replyText}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, 400);
+
+        // 套用效果
+        if (effect.happiness) player.happiness = Math.min(100, player.happiness + effect.happiness);
+        if (effect.health) player.health = Math.min(100, player.health + effect.health);
+        
+        // 增加好感度
+        let rel = player.relations.find(r => r.name === name);
+        if (rel) rel.affection = Math.min(100, rel.affection + 5);
 
         updateUI();
+        document.getElementById('chatChoices').innerHTML = `<p style="color:green; font-weight:bold; text-align:center;">✓ 對話完成，心情有所提升！</p>`;
+    }
 
-        document.getElementById('choicesContainer').innerHTML = '';
-        document.getElementById('actionPanel').style.display = 'block';
-
-        if (player.health <= 0 || player.happiness <= 0) {
-            endGame("人生告一段落，準備重新投胎！");
-        }
+    function closeChat() {
+        renderChatContacts();
     }
 
     function endGame(reason) {
-        document.getElementById('modalTitle').innerText = "Game Over";
+        document.getElementById('modalTitle').innerText = "Game Over - 人生重來";
         document.getElementById('modalDesc').innerText = `${reason}\n你在香港 (${player.district}) 生活左 ${player.age} 年，總共儲左 $${player.wealth.toLocaleString()}。`;
         document.getElementById('gameOverModal').style.display = 'flex';
     }
 
-    // 初始化第一局
     initNewGame();
 </script>
 
