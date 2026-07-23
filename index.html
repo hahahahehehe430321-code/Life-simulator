@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>互動聊天遊戲</title>
+    <title>人生旅程互動聊天遊戲</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -19,7 +19,7 @@
         .chat-container {
             width: 100%;
             max-width: 400px;
-            height: 600px;
+            height: 650px;
             background: #ffffff;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -95,13 +95,15 @@
             background-color: #d0e8ff;
         }
 
+        /* 確保輸入同發送按鈕容器獨立且排版正確 */
         .chat-input-container {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 15px;
+            padding: 12px 15px;
             background: #ffffff;
             border-top: 1px solid #e0e0e0;
+            flex-shrink: 0;
         }
 
         #chat-input {
@@ -148,23 +150,22 @@
 <body>
 
     <div class="chat-container">
-        <div class="chat-header">劇情互動遊戲</div>
+        <div class="chat-header">人生旅程：人際成長篇</div>
         
         <!-- 訊息顯示區域 -->
         <div id="chat-messages" class="chat-messages">
-            <div class="message system">歡迎來到遊戲！請選擇你嘅下一步行動，或者直接在下方輸入訊息。</div>
+            <div class="message system">歡迎黎到人生旅程！隨住年紀增長，你會喺唔同嘅階段遇到唔同嘅人，擴闊你嘅人際關係網絡。請選擇你現階段想專注嘅方向：</div>
         </div>
 
         <!-- 選項按鈕區域 -->
         <div id="choices-container" class="choices-container">
-            <!-- 示範選項 -->
-            <button class="choice-btn" onclick="selectChoice('向左走，探索神秘嘅森林')">向左走，探索神秘嘅森林</button>
-            <button class="choice-btn" onclick="selectChoice('向右走，前往熱鬧嘅市集')">向右走，前往熱鬧嘅市集</button>
+            <button class="choice-btn" onclick="selectChoice('學生時期：專注同幾位知心好友建立深厚默契')">學生時期：專注同幾位知心好友建立深厚默契</button>
+            <button class="choice-btn" onclick="selectChoice('踏入社會：開始結識各行各業嘅新朋友同夥伴')">踏入社會：開始結識各行各業嘅新朋友同夥伴</button>
         </div>
 
-        <!-- 聊天輸入框與紙飛機發送按鈕 -->
+        <!-- 聊天輸入框與清晰嘅紙飛機發送按鈕 -->
         <div class="chat-input-container">
-            <input type="text" id="chat-input" placeholder="輸入你想講嘅嘢..." />
+            <input type="text" id="chat-input" placeholder="輸入你想同聊天室講嘅嘢..." />
             <button id="send-btn" class="send-button" title="發送訊息">
                 <!-- 紙飛機 SVG 圖標 -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -190,31 +191,37 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // 處理玩家點擊上方「選擇」的操作
+        // 處理玩家點擊上方「人際關係選擇」的操作
         function selectChoice(choiceText) {
             appendMessage(choiceText, 'user');
             
-            // 模擬系統回應
+            // 隨住年紀與人際關係發展的劇情回應
             setTimeout(() => {
-                appendMessage(`你選擇咗：「${choiceText}」。冒險正式開始！`, 'system');
-            }, 500);
+                let responseText = "";
+                if (choiceText.includes('學生時期')) {
+                    text = "你選擇咗珍惜學生時代嘅純粹友誼。雖然圈子唔大，但呢班一齊玩遊戲、笑過喊過嘅朋友會成為你最寶貴嘅回憶！";
+                } else {
+                    text = "你選擇咗擴闊視野！隨住年紀增長，你開始喺唔同場合識到更多背景各異嘅新朋友，人際關係變得更加豐富多彩。";
+                }
+                appendMessage(text, 'system');
+            }, 600);
         }
 
-        // 處理輸入框文字發送
+        // 處理聊天室輸入框文字發送
         function handleSendMessage() {
             const messageText = inputField.value.trim();
             if (messageText === "") return;
 
-            // 發送用戶訊息
+            // 發送用戶訊息到聊天室
             appendMessage(messageText, 'user');
             
             // 清空輸入框
             inputField.value = "";
 
-            // 模擬系統自動回覆（你可以根據需要改成你的遊戲邏輯）
+            // 聊天室智能回覆（體現人際互動與成長）
             setTimeout(() => {
-                appendMessage(`收到你嘅訊息：「${messageText}」。遊戲繼續進行緊...`, 'system');
-            }, 500);
+                appendMessage(`聊天室好友回覆：「收到你嘅分享！人越大真係會識到越多唔同嘅人，每段關係都有佢獨特嘅意義呢～」`, 'system');
+            }, 600);
         }
 
         // 綁定紙飛機按鈕點擊事件
