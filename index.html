@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港人生模擬器 - Kong's Version</title>
+    <style>
+        :root {
+            --hk-red: #de2910;
+            --hk-gold: #ffde00;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #1e3799, #0c2461);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0 0 5px 0;
+            font-size: 26px;
+        }
+        header p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        .stat-card {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            transition: width 0.4s ease;
+        }
+        .bar-health { background-color: #2ecc71; }
+        .bar-happiness { background-color: #f1c40f; }
+        .bar-smart { background-color: #3498db; }
+        .bar-wealth { background-color: #e67e22; }
+
+        .info-panel {
+            padding: 15px 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .story-container {
+            padding: 25px;
+            min-height: 180px;
+        }
+        .story-year {
+            font-size: 14px;
+            color: var(--hk-red);
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .story-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .choice-btn {
+            background: #ffffff;
+            border: 2px solid #3498db;
+            color: #2980b9;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .choice-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .action-panel {
+            padding: 20px;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        .next-year-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+            transition: background 0.2s;
+        }
+        .next-year-btn:hover {
+            background: #219653;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .modal-content h2 { margin-top: 0; color: var(--hk-red); }
+        .restart-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🇭🇰 香港人生模擬器</h1>
+        <p>夾band、賺外快、去Concert，屬於你嘅香港故事</p>
+    </header>
+
+    <!-- 狀態欄 -->
+    <div class="stats-panel">
+        <div class="stat-card">
+            <div class="stat-label"><span>❤️ 健康</span><span id="statHealthNum">100%</span></div>
+            <div class="progress-bar-container"><div id="barHealth" class="progress-bar bar-health" style="width: 100%;"></div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span>😊 快樂指數</span><span id="statHappinessNum">80%</span></div>
+            <div class="progress-bar-container"><div id="barHappiness" class="progress-bar bar-happiness" style="width: 80%;"></div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span>🧠 智慧 / 學業</span><span id="statSmartNum">50%</span></div>
+            <div class="progress-bar-container"><div id="barSmart" class="progress-bar bar-smart" style="width: 50%;"></div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label"><span>💰 財富 (港幣)</span><span id="statWealthNum">$5,000</span></div>
+            <div class="progress-bar-container"><div id="barWealth" class="progress-bar bar-wealth" style="width: 20%;"></div></div>
+        </div>
+    </div>
+
+    <!-- 基本資料 -->
+    <div class="info-panel">
+        <span id="infoName">姓名：Kong Hoi Yau</span>
+        <span id="infoAge">年齡：0 歲 (初生嬰兒)</span>
+    </div>
+
+    <!-- 故事與事件區 -->
+    <div class="story-container">
+        <div class="story-year" id="storyYear">年份：2026年</div>
+        <div class="story-text" id="storyText">你喺香港順利出世喇！充滿藝術細胞同音樂天分嘅你，註定有一段多姿多采嘅人生。</div>
+        <div class="choices-container" id="choicesContainer"></div>
+    </div>
+
+    <!-- 下一年按鈕 -->
+    <div class="action-panel" id="actionPanel">
+        <button class="next-year-btn" id="nextYearBtn" onclick="nextYear()">⏩ 大一歲 (進入下年)</button>
+    </div>
+</div>
+
+<!-- 遊戲結束彈窗 -->
+<div class="modal" id="gameOverModal">
+    <div class="modal-content">
+        <h2 id="modalTitle">遊戲結束</h2>
+        <p id="modalDesc">你嘅香港人生到此為止。</p>
+        <button class="restart-btn" onclick="restartGame()">重新投胎</button>
+    </div>
+</div>
+
+<script>
+    let player = {
+        name: "Kong Hoi Yau",
+        age: 0,
+        year: 2026,
+        health: 100,
+        happiness: 80,
+        smart: 50,
+        wealth: 5000,
+        status: "初生嬰兒"
+    };
+
+    const events = [
+        {
+            minAge: 3, maxAge: 6,
+            text: "父母比你接觸左唔同嘅樂器同畫畫，你對填色同夾雜水彩好有興趣！",
+            choices: [
+                { text: "專心用簡單背景畫出自己嘅幻想世界", effect: { happiness: 10, smart: 5 } },
+                { text: "拎起結他/Ukulele亂彈一通", effect: { happiness: 15, smart: 2 } }
+            ]
+        },
+        {
+            minAge: 7, maxAge: 11,
+            text: "小學生活開始喇，除左應付測驗，你仲展現左好多才華（好似溜冰、游水、彈豎琴等）。",
+            choices: [
+                { text: "放學去溜冰場同朋友仔玩", effect: { happiness: 15, health: 5 } },
+                { text: "留喺屋企安靜咁手作整小手作", effect: { happiness: 10, smart: 5 } }
+            ]
+        },
+        {
+            minAge: 12, maxAge: 15,
+            text: "中學時期，你迷上左夾band同聽靚歌，仲好想去睇心儀歌手嘅Concert！",
+            choices: [
+                { text: "親手整靚靚嘅Concert應援裝飾物同手作", effect: { happiness: 20, wealth: -300 } },
+                { text: "同朋友一齊夾band玩音樂", effect: { happiness: 20, smart: 5 } }
+            ]
+        },
+        {
+            minAge: 16, maxAge: 18,
+            text: "迎黎地獄級嘅 **DSE香港中學文憑試**，溫書溫到好攰……",
+            choices: [
+                { text: "頂硬上通宵溫書，為前途搏盡", effect: { smart: 20, health: -15, happiness: -15 } },
+                { text: "聽住 Laufey 嘅歌黎療癒心靈，放鬆心情", effect: { happiness: 25, smart: -5 } }
+            ]
+        },
+        {
+            minAge: 19, maxAge: 25,
+            text: "升左大學 / 出黎兼職賺錢。為左儲錢，你開始返幾份工（補習、麥當勞、Kidult Academy）。",
+            choices: [
+                { text: "去補習社 ($75/hr) 教學生，賺取穩定收入", effect: { wealth: 2500, smart: 10 } },
+                { text: "去麥當勞 ($60/hr) 做兼職，順便享受中間嘅休息時段", effect: { wealth: 2000, health: -5 } },
+                { text: "去 Kidult Academy ($65/hr) 開心返工", effect: { wealth: 2200, happiness: 10 } }
+            ]
+        },
+        {
+            minAge: 26, maxAge: 50,
+            text: "閒時除左做嘢，仲會同老友記開網上直播或者同朋友打機，充滿快樂回憶。",
+            choices: [
+                { text: "開live同粉絲互動，重溫做Content Creator嘅快樂", effect: { happiness: 20, wealth: 1000 } },
+                { text: "同老友一齊連線打機，放鬆減壓", effect: { happiness: 20, health: -2 } }
+            ]
+        }
+    ];
+
+    function updateUI() {
+        document.getElementById('statHealthNum').innerText = player.health + '%';
+        document.getElementById('barHealth').style.width = player.health + '%';
+
+        document.getElementById('statHappinessNum').innerText = player.happiness + '%';
+        document.getElementById('barHappiness').style.width = player.happiness + '%';
+
+        document.getElementById('statSmartNum').innerText = player.smart + '%';
+        document.getElementById('barSmart').style.width = player.smart + '%';
+
+        document.getElementById('statWealthNum').innerText = '$' + player.wealth.toLocaleString();
+        let wealthPercent = Math.min(100, (player.wealth / 500000) * 100);
+        document.getElementById('barWealth').style.width = Math.max(0, wealthPercent) + '%';
+
+        document.getElementById('infoName').innerText = `姓名：${player.name}`;
+        document.getElementById('infoAge').innerText = `年齡：${player.age} 歲 (${player.status})`;
+        document.getElementById('storyYear').innerText = `年份：${player.year}年`;
+    }
+
+    function checkAgeStatus() {
+        if (player.age < 3) player.status = "初生嬰兒";
+        else if (player.age < 6) player.status = "精靈小朋友";
+        else if (player.age < 12) player.status = "多才多藝小學生";
+        else if (player.age < 18) player.status = "中學夾band文青";
+        else if (player.age < 25) { player.status = "斜槓族兼職達人 (補習/Mcd/Kidult)"; }
+        else { player.status = "成熟創作者 / 獨立型女性"; }
+    }
+
+    function nextYear() {
+        player.age++;
+        player.year++;
+        checkAgeStatus();
+
+        player.health = Math.max(0, Math.min(100, player.health - Math.floor(Math.random() * 2)));
+        player.happiness = Math.max(0, Math.min(100, player.happiness + (Math.floor(Math.random() * 5) - 2)));
+
+        if (player.health <= 0 || player.happiness <= 0) {
+            endGame("由於生活壓力太大，需要好好休息重新嚟過……");
+            return;
+        }
+
+        let availableEvents = events.filter(e => player.age >= e.minAge && player.age <= e.maxAge);
+        
+        if (availableEvents.length > 0 && Math.random() < 0.75) {
+            let ev = availableEvents[Math.floor(Math.random() * availableEvents.length)];
+            document.getElementById('storyText').innerText = ev.text;
+            
+            let choicesHTML = '';
+            ev.choices.forEach((c) => {
+                choicesHTML += `<button class="choice-btn" onclick='makeChoice(${JSON.stringify(c.effect)})'>${c.text}</button>`;
+            });
+            document.getElementById('choicesContainer').innerHTML = choicesHTML;
+            document.getElementById('actionPanel').style.display = 'none';
+        } else {
+            document.getElementById('storyText').innerText = `今年過得好寫意，畫左幅靚水彩畫，又聽左靚歌。`;
+            document.getElementById('choicesContainer').innerHTML = '';
+            document.getElementById('actionPanel').style.display = 'block';
+        }
+
+        updateUI();
+    }
+
+    function makeChoice(effect) {
+        if (effect.health) player.health = Math.max(0, Math.min(100, player.health + effect.health));
+        if (effect.happiness) player.happiness = Math.max(0, Math.min(100, player.happiness + effect.happiness));
+        if (effect.smart) player.smart = Math.max(0, Math.min(100, player.smart + effect.smart));
+        if (effect.wealth) player.wealth += effect.wealth;
+
+        updateUI();
+
+        document.getElementById('choicesContainer').innerHTML = '';
+        document.getElementById('actionPanel').style.display = 'block';
+
+        if (player.health <= 0 || player.happiness <= 0) {
+            endGame("人生中場休息，準備重新投胎！");
+        }
+    }
+
+    function endGame(reason) {
+        document.getElementById('modalTitle').innerText = "Game Over";
+        document.getElementById('modalDesc').innerText = `${reason}\n你在香港生活左 ${player.age} 年，總共儲左 $${player.wealth.toLocaleString()}。`;
+        document.getElementById('gameOverModal').style.display = 'flex';
+    }
+
+    function restartGame() {
+        player = {
+            name: "Kong Hoi Yau",
+            age: 0,
+            year: 2026,
+            health: 100,
+            happiness: 80,
+            smart: 50,
+            wealth: 5000,
+            status: "初生嬰兒"
+        };
+        document.getElementById('gameOverModal').style.display = 'none';
+        document.getElementById('storyText').innerText = "你喺香港順利出世喇！充滿藝術細胞同音樂天分嘅你，註定有一段多姿多采嘅人生。";
+        document.getElementById('actionPanel').style.display = 'block';
+        updateUI();
+    }
+
+    updateUI();
+</script>
+
+</body>
+</html>
