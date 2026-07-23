@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港人生模擬器 - 智能聊天互動版</title>
+    <title>香港人生模擬器 - 最終完全修復版</title>
     <style>
         :root {
             --primary-color: #1e3799;
@@ -209,7 +209,7 @@
         .chat-window { display: none; }
         .chat-box {
             background: #f1f2f6;
-            height: 240px;
+            height: 230px;
             border-radius: 8px;
             padding: 12px;
             overflow-y: auto;
@@ -273,7 +273,7 @@
 <div class="container">
     <header>
         <h1>🇭🇰 香港人生模擬器</h1>
-        <p>絕對不重複事件 • 智慧動態對話</p>
+        <p>100% 絕對不重複事件 • 即時暢順聊天對話</p>
     </header>
 
     <!-- 頂部目錄導航 -->
@@ -283,7 +283,7 @@
         <button class="nav-tab" onclick="switchTab('chat')">💬 聊天室</button>
     </div>
 
-    <!-- 狀態欄 (全域顯示) -->
+    <!-- 狀態欄 -->
     <div class="stats-panel">
         <div class="stat-card">
             <div class="stat-label"><span>❤️ 健康</span><span id="statHealthNum">100%</span></div>
@@ -314,7 +314,7 @@
         </div>
     </div>
 
-    <!-- 頁面 1：主頁 (人生模擬) -->
+    <!-- 頁面 1：主頁 -->
     <div id="tab-home" class="tab-content active">
         <div class="story-year" id="storyYear">年份：2026年</div>
         <div class="story-text" id="storyText">正在隨機投胎中……</div>
@@ -343,7 +343,7 @@
     </div>
 </div>
 
-<!-- 遊戲結束/結算彈窗 -->
+<!-- 遊戲結束彈窗 -->
 <div class="modal" id="gameOverModal">
     <div class="modal-content">
         <h2 id="modalTitle" style="color:var(--hk-red);">人生結算報告</h2>
@@ -384,81 +384,21 @@
         ]
     };
 
-    // 事件總庫
+    // 龐大事件庫（保證橫跨各個年齡層，每張卡獨立id）
     const masterEventPool = [
-        {
-            minAge: 1, maxAge: 11,
-            text: "今日去咗屋邨樓下嘅公園玩瀡滑梯，見到有小朋友唔小心跌親喊緊。",
-            choices: [
-                { text: "立刻拎出袋入面嘅紙巾慰問對方", effect: { happiness: 5, health: 2 } },
-                { text: "自己照玩滑梯，當睇唔到算數", effect: { smart: 2 } }
-            ]
-        },
-        {
-            minAge: 3, maxAge: 11,
-            text: "幼稚園老師派咗一本填色冊，要求聽日交返，但你仲爭好大片未油。",
-            choices: [
-                { text: "搏老命開夜車自己用顏色筆精心油好", effect: { smart: 5, health: -2, happiness: 3 } },
-                { text: "叫亞媽幫手代勞搞掂佢", effect: { happiness: 5, smart: -2 } }
-            ]
-        },
-        {
-            minAge: 6, maxAge: 11,
-            text: "學校舉辦小學手作創意勞作比賽，老師叫大家利用環保廢料進行創作。",
-            choices: [
-                { text: "花心思整咗個精緻嘅環保小模型參賽", effect: { smart: 8, happiness: 5 } },
-                { text: "求其交行貨，慳番啲時間去玩", effect: { happiness: 2 } }
-            ]
-        },
-        {
-            minAge: 7, maxAge: 11,
-            text: "今日喺小食檔買咗一底格仔餅，點知一不小心成底跌咗落地。",
-            choices: [
-                { text: "喊出嚟並肉痛咁用零用錢再買多底", effect: { wealth: -20, happiness: 3 } },
-                { text: "算數當減肥，返屋企食阿媽煮嘅飯", effect: { health: 3, happiness: -2 } }
-            ]
-        },
-        {
-            minAge: 12, maxAge: 17,
-            text: "放學經過信和中心，見到心儀歌手嘅限量版CD同演唱會應援周邊，心大心細。",
-            choices: [
-                { text: "忍痛用晒呢個月嘅零用錢買落收藏", effect: { wealth: -200, happiness: 15 } },
-                { text: "理性放棄，留番啲錢買格仔餅食", effect: { wealth: 30, happiness: 5 } }
-            ]
-        },
-        {
-            minAge: 13, maxAge: 17,
-            text: "今日學校陸運會，班長問你有冇興趣代表班別參加 1500米長跑比賽。",
-            choices: [
-                { text: "一口答應落場狂奔，挑戰自我", effect: { health: 10, happiness: 10 } },
-                { text: "耍手擰頭話自己主力喺台下打氣", effect: { happiness: 3 } }
-            ]
-        },
-        {
-            minAge: 15, maxAge: 18,
-            text: "面臨地獄級嘅 DSE 中學文憑試，溫書溫到個人心灰意冷，壓力爆煲。",
-            choices: [
-                { text: "閉關通宵狂操Past Paper，務求拎高分", effect: { smart: 15, health: -8, happiness: -10 } },
-                { text: "聽住歌彈下結他/畫陣畫，放鬆身心", effect: { happiness: 12, health: 5, smart: 3 } }
-            ]
-        },
-        {
-            minAge: 18, maxAge: 29,
-            text: "你嘗試喺網上搞緊自己嘅手作網店，第一日就收到第一個陌生客嘅查詢同訂單！",
-            choices: [
-                { text: "用心手作包裝，仲手寫感謝卡送畀客", effect: { smart: 10, wealth: 500, happiness: 15 } },
-                { text: "用最快速度寄出包裹算數", effect: { wealth: 400, happiness: 5 } }
-            ]
-        },
-        {
-            minAge: 22, maxAge: 35,
-            text: "剛出黎社會做嘢，老細突然話今日部門要OT到深夜，而且冇補水補貼。",
-            choices: [
-                { text: "據理力爭夠鐘即刻走人去嘆凍檸茶", effect: { happiness: 10, wealth: -20 } },
-                { text: "默默死忍繼續OT，費事得罪老細", effect: { wealth: 300, health: -10, happiness: -10 } }
-            ]
-        }
+        { id: 1, minAge: 1, maxAge: 5, text: "今日去咗屋邨樓下嘅公園玩瀡滑梯，見到有小朋友唔小心跌親喊緊。", choices: [{ text: "立刻拎出袋入面嘅紙巾慰問對方", effect: { happiness: 5, health: 2 } }, { text: "自己照玩滑梯，當睇唔到算數", effect: { smart: 2 } }] },
+        { id: 2, minAge: 3, maxAge: 6, text: "幼稚園老師派咗一本填色冊，要求聽日交返，但你仲爭好大片未油。", choices: [{ text: "搏老命開夜車自己用顏色筆精心油好", effect: { smart: 5, health: -2, happiness: 3 } }, { text: "叫亞媽幫手代勞搞掂佢", effect: { happiness: 5, smart: -2 } }] },
+        { id: 3, minAge: 6, maxAge: 11, text: "學校舉辦小學手作創意勞作比賽，老師叫大家利用環保廢料進行創作。", choices: [{ text: "花心思整咗個精緻嘅環保小模型參賽", effect: { smart: 8, happiness: 5 } }, { text: "求其交行貨，慳番啲時間去玩", effect: { happiness: 2 } }] },
+        { id: 4, minAge: 7, maxAge: 11, text: "今日喺小食檔買咗一底格仔餅，點知一不小心成底跌咗落地。", choices: [{ text: "喊出嚟並肉痛咁用零用錢再買多底", effect: { wealth: -20, happiness: 3 } }, { text: "算數當減肥，返屋企食阿媽煮嘅飯", effect: { health: 3, happiness: -2 } }] },
+        { id: 5, minAge: 12, maxAge: 16, text: "放學經過信和中心，見到心儀歌手嘅限量版CD同演唱會應援周邊，心大心細。", choices: [{ text: "忍痛用晒呢個月嘅零用錢買落收藏", effect: { wealth: -200, happiness: 15 } }, { text: "理性放棄，留番啲錢買格仔餅食", effect: { wealth: 30, happiness: 5 } }] },
+        { id: 6, minAge: 13, maxAge: 17, text: "今日學校陸運會，班長問你有冇興趣代表班別參加 1500米長跑比賽。", choices: [{ text: "一口答應落場狂奔，挑戰自我", effect: { health: 10, happiness: 10 } }, { text: "耍手擰頭話自己主力喺台下打氣", effect: { happiness: 3 } }] },
+        { id: 7, minAge: 15, maxAge: 18, text: "面臨地獄級嘅 DSE 中學文憑試，溫書溫到個人心灰意冷，壓力爆煲。", choices: [{ text: "閉關通宵狂操Past Paper，務求拎高分", effect: { smart: 15, health: -8, happiness: -10 } }, { text: "聽住歌彈下結他/畫陣畫，放鬆身心", effect: { happiness: 12, health: 5, smart: 3 } }] },
+        { id: 8, minAge: 18, maxAge: 25, text: "你嘗試喺網上搞緊自己嘅手作網店，第一日就收到第一個陌生客嘅查詢同訂單！", choices: [{ text: "用心手作包裝，仲手寫感謝卡送畀客", effect: { smart: 10, wealth: 500, happiness: 15 } }, { text: "用最快速度寄出包裹算數", effect: { wealth: 400, happiness: 5 } }] },
+        { id: 9, minAge: 22, maxAge: 40, text: "剛出黎社會做嘢，老細突然話今日部門要OT到深夜，而且冇補水補貼。", choices: [{ text: "據理力爭夠鐘即刻走人去嘆凍檸茶", effect: { happiness: 10, wealth: -20 } }, { text: "默默死忍繼續OT，費事得罪老細", effect: { wealth: 300, health: -10, happiness: -10 } }] },
+        { id: 10, minAge: 25, maxAge: 50, text: "屋企老舊唐樓嘅水喉突然嚴重漏水，搞到成屋都係水，要即刻處理。", choices: [{ text: "搵專業師傅徹底大維修，洗一大筆錢", effect: { wealth: -3000, happiness: 2, health: 3 } }, { text: "自己上網睇教學買材料落手修理", effect: { wealth: -500, smart: 8, happiness: -5, health: -3 } }] }
     ];
+
+    let currentChatContact = null;
 
     function switchTab(tabId) {
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -551,6 +491,7 @@
             return;
         }
 
+        // 嚴格篩選出合乎年齡嘅事件索引
         let validIndices = [];
         for (let i = 0; i < player.availableEvents.length; i++) {
             let ev = player.availableEvents[i];
@@ -559,10 +500,13 @@
             }
         }
 
-        if (validIndices.length > 0 && Math.random() < 0.9) {
-            let randIdx = validIndices[Math.floor(Math.random() * validIndices.length)];
-            let ev = player.availableEvents[randIdx];
-            player.availableEvents.splice(randIdx, 1);
+        if (validIndices.length > 0 && Math.random() < 0.95) {
+            let randValidPos = Math.floor(Math.random() * validIndices.length);
+            let realIndex = validIndices[randValidPos];
+            let ev = player.availableEvents[realIndex];
+
+            // 關鍵：抽中後立刻從總陣列永久剔除，絕不重複！
+            player.availableEvents.splice(realIndex, 1);
 
             document.getElementById('storyText').innerText = `【${player.age}歲這年】 ${ev.text}`;
             
@@ -574,11 +518,11 @@
             document.getElementById('nextYearBtn').style.display = 'none';
         } else {
             const routineStories = [
-                `今年喺${player.district}過得好平穩。朝早搭港鐵返工返學，晏晝喺茶餐廳食左個常餐，生活踏實。`,
+                `今年喺${player.district}過得好平穩。朝早搭港鐵返工返學，晏晝喺茶餐廳食個常餐，生活踏實。`,
                 `今年天氣唔錯，你喺${player.district}屋企附近同朋友行左陣街，買左件心儀嘅小飾物，心情愉快。`,
                 `今年工作同生活都好順利，放假時留喺屋企煲劇、聼歌同埋享受難得嘅Me Time。`
             ];
-            document.getElementById('storyText').innerText = `【${player.age}歲這年】 ` + routineStories[Math.floor(Math.random() * routineStories.length)];
+            document.getElementById('storyText').innerText = `【${player.age}歲這年} ` + routineStories[Math.floor(Math.random() * routineStories.length)];
             document.getElementById('choicesContainer').innerHTML = '';
             document.getElementById('nextYearBtn').style.display = 'block';
         }
@@ -626,13 +570,11 @@
     }
 
     function openChat(name) {
+        currentChatContact = name;
         document.getElementById('chatMenu').style.display = 'none';
         document.getElementById('chatRoom').style.display = 'block';
         
         let chatBox = document.getElementById('chatBox');
-        let rel = player.relations.find(r => r.name === name);
-        
-        // 根據角色身份同目前年齡生成初次開場白
         let introText = "";
         if (name === "嚴厲阿媽") {
             introText = `喂，你今年已經 ${player.age} 歲喇（${player.status}），喺 ${player.district} 住得好唔好？有無畀心機讀書/做嘢？`;
@@ -646,7 +588,6 @@
         generateChatChoices(name);
     }
 
-    // 根據角色、年齡、玩家狀態動態生成度身訂造嘅對話選項
     function generateChatChoices(name) {
         let choicesHTML = '';
         let options = [];
@@ -659,11 +600,11 @@
             ];
         } else if (name === "慈祥老豆") {
             options = [
-                { text: "「老豆放心，我依家 ${player.status} 過得幾好！」", reply: "「後生仔最緊要係肯搏肯試，有老豆喺度撐你！」", effect: { happiness: 10, health: 2 } },
+                { text: "「老豆放心，我依家生活過得幾好！」", reply: "「後生仔最緊要係肯搏肯試，有老豆喺度撐你！」", effect: { happiness: 10, health: 2 } },
                 { text: "「最近手頭有啲緊絀……」", reply: "「使費大就同老豆講聲，呢封利是仔你拎去傍身先！」", effect: { happiness: 8, wealth: 500 } },
                 { text: "「好呀！今個星期一齊去飲茶！」", reply: "「得！咁約定星期六朝早老豆卜定位去酒樓！」", effect: { happiness: 12 } }
             ];
-        } else { // 老友明仔
+        } else {
             options = [
                 { text: "「今晚得閒！上網開Discord打返鋪機！」", reply: "「正啊！陣間夜啲見，今晚一定要打返夠本！」", effect: { happiness: 12 } },
                 { text: "「最近忙緊自己嘅興趣同手作，無乜時間。」", reply: "「嘩你又搞咁多創作？得啦咁你忙先，搞掂再約過！」", effect: { smart: 3, happiness: 5 } },
@@ -672,9 +613,7 @@
         }
 
         options.forEach(opt => {
-            // 取代字串中嘅變數
-            let processedText = opt.text.replace('${player.status}', player.status);
-            choicesHTML += `<button class="choice-btn" onclick="sendChat('${name}', '${processedText}', '${opt.reply}', ${JSON.stringify(opt.effect)})">${processedText}</button>`;
+            choicesHTML += `<button class="choice-btn" onclick="sendChat('${name}', '${opt.text}', '${opt.reply}', ${JSON.stringify(opt.effect)})">${opt.text}</button>`;
         });
 
         document.getElementById('chatChoices').innerHTML = choicesHTML;
@@ -683,19 +622,17 @@
     function sendChat(name, myText, replyText, effect) {
         let chatBox = document.getElementById('chatBox');
         
-        // 1. 即時將玩家嘅訊息出現在聊天框
+        // 即時將玩家訊息上屏
         chatBox.innerHTML += `<div class="chat-bubble me"><b>你：</b>${myText}</div>`;
         chatBox.scrollTop = chatBox.scrollHeight;
 
-        // 清空選項按鈕，防止連續連擊
+        // 清空按鈕並顯示正在輸入
         document.getElementById('chatChoices').innerHTML = `<p style="color:#718093; font-style:italic; text-align:center; font-size:13px;">對方正在輸入中...</p>`;
 
-        // 2. 模擬對方思考同打字後，生成對應回覆
         setTimeout(() => {
             chatBox.innerHTML += `<div class="chat-bubble other"><b>${name}：</b>${replyText}</div>`;
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // 更新數值與好感度
             if (effect.happiness) player.happiness = Math.min(100, player.happiness + effect.happiness);
             if (effect.health) player.health = Math.min(100, player.health + effect.health);
             if (effect.smart) player.smart = Math.min(100, player.smart + effect.smart);
@@ -706,14 +643,17 @@
 
             updateUI();
 
-            // 3. 回覆完後再次顯示選項，允許繼續對話
+            // 再次生成選項，保持順暢對話
             setTimeout(() => {
-                generateChatChoices(name);
-            }, 600);
-        }, 700);
+                if (currentChatContact === name) {
+                    generateChatChoices(name);
+                }
+            }, 500);
+        }, 600);
     }
 
     function closeChat() {
+        currentChatContact = null;
         renderChatContacts();
     }
 
