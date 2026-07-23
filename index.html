@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>香港人生模擬器 - 每年完全獨立事件版</title>
+    <title>香港人生模擬器 - 聊天室完美修復版</title>
     <style>
         :root {
             --primary-color: #1e3799;
@@ -273,7 +273,7 @@
 <div class="container">
     <header>
         <h1>🇭🇰 香港人生模擬器</h1>
-        <p>每年專屬獨立事件 • 即時暢順雙向聊天</p>
+        <p>每年專屬獨立事件 • 聊天室極速暢順發送</p>
     </header>
 
     <!-- 頂部目錄導航 -->
@@ -383,148 +383,28 @@
         ]
     };
 
-    // 核心：精準對應「每一個特定年齡（age）」嘅獨立專屬事件庫，確保歲數唔同，事件同選項完全唔同！
+    // 每年絕對獨立、完全不重複的專屬事件地圖
     const exactAgeEventMap = {
-        1: {
-            text: "你剛滿 1 歲，學緊行路。今日喺屋企廳中間突然想放手自己行，但前面有張木檯角。",
-            choices: [
-                { text: "勇敢邁出第一步，嘗試自己平衡向前行", effect: { smart: 3, happiness: 5, health: -2 } },
-                { text: "坐低爬算數，穩陣至上唔冒險", effect: { health: 2, happiness: 1 } }
-            ]
-        },
-        2: {
-            text: "2 歲嘅你開始有自己脾氣。夜晚阿媽餵你食港式蔬菜蓉，但你完全唔鍾意個味道。",
-            choices: [
-                { text: "扁嘴扭計，將碗嘢推開唔肯食", effect: { happiness: -3, health: -2 } },
-                { text: "乖乖聽話吞落肚，補充營養", effect: { health: 5, smart: 2 } }
-            ]
-        },
-        3: {
-            text: "3 歲入咗N班，老師派咗一盒積木，要大家分工砌一座城堡。",
-            choices: [
-                { text: "主動同隔離同學仔溝通合作，一齊砌出高塔", effect: { smart: 5, happiness: 5 } },
-                { text: "自己霸住啲靚積木，唔理其他人", effect: { happiness: 2, smart: -2 } }
-            ]
-        },
-        4: {
-            text: "4 歲去左屋邨樓下嘅社區中心，有得揀學畫畫定係學行平衡車。",
-            choices: [
-                { text: "選擇學平衡車，訓練四肢協調", effect: { health: 5, happiness: 4, wealth: -50 } },
-                { text: "選擇學填色畫畫，培養美感耐性", effect: { smart: 5, happiness: 4, wealth: -50 } }
-            ]
-        },
-        5: {
-            text: "5 歲準備升高班，屋企人帶你去書局買第一套認字書包。",
-            choices: [
-                { text: "開開心心自己揀本有立體圖畫嘅故事書", effect: { smart: 6, happiness: 4 } },
-                { text: "扭計要買成套昂貴嘅卡通模型玩具", effect: { wealth: -200, happiness: 6 } }
-            ]
-        },
-        6: {
-            text: "6 歲正式成為小學一年級新生，第一日放學阿媽問你適唔適應學校環境。",
-            choices: [
-                { text: "充滿好奇咁同阿媽分享識到新朋友嘅開心事", effect: { smart: 5, happiness: 6 } },
-                { text: "覺得功課同規矩比想像中多，有啲悶悶不樂", effect: { happiness: -4, smart: 2 } }
-            ]
-        },
-        7: {
-            text: "7 歲學校舉辦小學陸運會，老師問你有冇興趣參加 60米短跑。",
-            choices: [
-                { text: "舉手報名，落場盡全力衝線", effect: { health: 6, happiness: 5 } },
-                { text: "婉拒落場，淨係喺觀看台食零食打氣", effect: { happiness: 2 } }
-            ]
-        },
-        8: {
-            text: "8 歲小學周年同樂日，班級準備擺攤位遊戲，大家爭論緊整咩主題好。",
-            choices: [
-                { text: "提議搞夾公仔機攤位，吸引最多人玩", effect: { smart: 6, happiness: 5 } },
-                { text: "提議搞傳統擲彩虹遊戲，夠晒經典", effect: { smart: 4, happiness: 4 } }
-            ]
-        },
-        9: {
-            text: "9 歲小三測驗週，數學科有一條好刁轉嘅應用題考起左你。",
-            choices: [
-                { text: "用擦膠慢慢擦左重做，計到出答案為止", effect: { smart: 8, happiness: -2 } },
-                { text: "求其填個數字上去，由得佢算", effect: { smart: -4, happiness: 2 } }
-            ]
-        },
-        10: {
-            text: "10 歲學校圖書館舉辦「閱讀之星」計劃，鼓勵大家一年内睇夠20本書。",
-            choices: [
-                { text: "挑戰自己，每星期定時借書閱讀", effect: { smart: 10, happiness: 4 } },
-                { text: "得過且過，求其借薄漫畫交差", effect: { happiness: 3, smart: -2 } }
-            ]
-        },
-        11: {
-            text: "11 歲面臨小學升中派位選校嘅關鍵時刻，要決定填邊間中學做第一志願。",
-            choices: [
-                { text: "揀一間出名讀書風氣好嘅Band 1傳統名校", effect: { smart: 12, happiness: -4 } },
-                { text: "揀屋企附近輕鬆開心嘅地區中學", effect: { happiness: 8, smart: 4 } }
-            ]
-        },
-        12: {
-            text: "12 歲升上中一，英文科全英文授課令你一開始有啲聽唔明。",
-            choices: [
-                { text: "放學即刻去搵英文老師補底同問書", effect: { smart: 10, happiness: -2 } },
-                { text: "喺台下發白日夢，聽唔明就算", effect: { smart: -6, happiness: 3 } }
-            ]
-        },
-        13: {
-            text: "13 歲學校搞學會招募，你面臨興趣嘅交叉點。",
-            choices: [
-                { text: "加入電腦程式學會，學整網頁同Coding", effect: { smart: 10, happiness: 5 } },
-                { text: "加入管樂團學吹樂器，培養音樂修養", effect: { happiness: 8, smart: 5, wealth: -100 } }
-            ]
-        },
-        14: {
-            text: "14 歲中三選科前夕，屋企人希望你將來讀理科/醫科，但你其實對藝術有興趣。",
-            choices: [
-                { text: "順應屋企人期望，揀理科穩陣走前路", effect: { smart: 10, wealth: 200, happiness: -5 } },
-                { text: "堅持自我，揀自己鍾意嘅視藝/文科", effect: { happiness: 10, smart: 4 } }
-            ]
-        },
-        15: {
-            text: "15 歲學校舉辦童軍戶外露營活動，夜晚要同組員一齊起營同煮飯。",
-            choices: [
-                { text: "做主力大廚幫手起爐煮出豐富晚餐", effect: { health: 6, happiness: 8, smart: 4 } },
-                { name: "hea做幫手遞下嘢，主要負責食", effect: { happiness: 4 } }
-            ]
-        },
-        16: {
-            text: "16 歲開始步入中學高年級，身邊同學開始互相比較大家嘅零用錢同手機牌子。",
-            choices: [
-                { text: "專注自己學業同興趣，唔盲目比較攀比", effect: { smart: 8, happiness: 6 } },
-                { text: "問老豆老母扭計要換最新款旗艦智能手機", effect: { wealth: -800, happiness: 6 } }
-            ]
-        },
-        17: {
-            text: "17 歲中六最後衝刺，距離 DSE 只剩三個星期，溫書溫到情緒焦慮。",
-            choices: [
-                { text: "實行地獄式閉關溫習，日操夜操 Past Paper", effect: { smart: 15, health: -8, happiness: -8 } },
-                { text: "調節心態，早睡早起兼適度同朋友傾計減壓", effect: { health: 8, happiness: 8, smart: 6 } }
-            ]
-        },
-        18: {
-            text: "18 歲 DSE 放榜喇！成績出黎比預期中有些少落差，要即刻決定 VTC、asso 定重讀。",
-            choices: [
-                { text: "執平伏心情報讀心儀嘅高級文憑/asso課程，繼續向上爬", effect: { smart: 10, wealth: -500, happiness: 3 } },
-                { text: "決定毅然打工投身社會賺錢", effect: { wealth: 5000, smart: -3, happiness: 2 } }
-            ]
-        },
-        19: {
-            text: "19 歲大專生涯，朋友組隊叫你去蘭桂坊或者派對玩通宵。",
-            choices: [
-                { text: "去體驗下夜生活同擴闊社交圈子", effect: { happiness: 10, health: -5, wealth: -300 } },
-                { text: "拒絕夜蒲，留喺屋企煲劇打機休息", effect: { health: 5, happiness: 6 } }
-            ]
-        },
-        20: {
-            text: "20 歲暑假，你決定同朋友去一次自由行，但budget有限。",
-            choices: [
-                { text: "去鄰近嘅日本/台灣窮遊，深度體驗當地文化", effect: { happiness: 12, wealth: -4000, smart: 5 } },
-                { text: "留港做freelance兼職，儲多啲實質現金", effect: { wealth: 6000, happiness: 3 } }
-            ]
-        }
+        1: { text: "你剛滿 1 歲，學緊行路。今日喺屋企廳中間突然想放手自己行，但前面有張木檯角。", choices: [{ text: "勇敢邁出第一步，嘗試自己平衡向前行", effect: { smart: 3, happiness: 5, health: -2 } }, { text: "坐低爬算數，穩陣至上唔冒險", effect: { health: 2, happiness: 1 } }] },
+        2: { text: "2 歲嘅你開始有自己脾氣。夜晚阿媽餵你食港式蔬菜蓉，但你完全唔鍾意個味道。", choices: [{ text: "扁嘴扭計，將碗嘢推開唔肯食", effect: { happiness: -3, health: -2 } }, { text: "乖乖聽話吞落肚，補充營養", effect: { health: 5, smart: 2 } }] },
+        3: { text: "3 歲入咗N班，老師派咗一盒積木，要大家分工砌一座城堡。", choices: [{ text: "主動同隔離同學仔溝通合作，一齊砌出高塔", effect: { smart: 5, happiness: 5 } }, { text: "自己霸住啲靚積木，唔理其他人", effect: { happiness: 2, smart: -2 } }] },
+        4: { text: "4 歲去左屋邨樓下嘅社區中心，有得揀學畫畫定係學行平衡車。", choices: [{ text: "選擇學平衡車，訓練四肢協調", effect: { health: 5, happiness: 4, wealth: -50 } }, { text: "選擇學填色畫畫，培養美感耐性", effect: { smart: 5, happiness: 4, wealth: -50 } }] },
+        5: { text: "5 歲準備升高班，屋企人帶你去書局買第一套認字書包。", choices: [{ text: "開開心心自己揀本有立體圖畫嘅故事書", effect: { smart: 6, happiness: 4 } }, { text: "扭計要買成套昂貴嘅卡通模型玩具", effect: { wealth: -200, happiness: 6 } }] },
+        6: { text: "6 歲正式成為小學一年級新生，第一日放學阿媽問你適唔適應學校環境。", choices: [{ text: "充滿好奇咁同阿媽分享識到新朋友嘅開心事", effect: { smart: 5, happiness: 6 } }, { text: "覺得功課同規矩比想像中多，有啲悶悶不樂", effect: { happiness: -4, smart: 2 } }] },
+        7: { text: "7 歲學校舉辦小學陸運會，老師問你有冇興趣參加 60米短跑。", choices: [{ text: "舉手報名，落場盡全力衝線", effect: { health: 6, happiness: 5 } }, { text: "婉拒落場，淨係喺觀看台食零食打氣", effect: { happiness: 2 } }] },
+        8: { text: "8 歲小學周年同樂日，班級準備擺攤位遊戲，大家爭論緊整咩主題好。", choices: [{ text: "提議搞夾公仔機攤位，吸引最多人玩", effect: { smart: 6, happiness: 5 } }, { text: "提議搞傳統擲彩虹遊戲，夠晒經典", effect: { smart: 4, happiness: 4 } }] },
+        9: { text: "9 歲小三測驗週，數學科有一條好刁轉嘅應用題考起左你。", choices: [{ text: "用擦膠慢慢擦左重做，計到出答案為止", effect: { smart: 8, happiness: -2 } }, { text: "求其填個數字上去，由得佢算", effect: { smart: -4, happiness: 2 } }] },
+        10: { text: "10 歲學校圖書館舉辦「閱讀之星」計劃，鼓勵大家一年内睇夠20本書。", choices: [{ text: "挑戰自己，每星期定時借書閱讀", effect: { smart: 10, happiness: 4 } }, { text: "得過且過，求其借薄漫畫交差", effect: { happiness: 3, smart: -2 } }] },
+        11: { text: "11 歲面臨小學升中派位選校嘅關鍵時刻，要決定填邊間中學做第一志願。", choices: [{ text: "揀一間出名讀書風氣好嘅Band 1傳統名校", effect: { smart: 12, happiness: -4 } }, { text: "揀屋企附近輕鬆開心嘅地區中學", effect: { happiness: 8, smart: 4 } }] },
+        12: { text: "12 歲升上中一，英文科全英文授課令你一開始有啲聽唔明。", choices: [{ text: "放學即刻去搵英文老師補底同問書", effect: { smart: 10, happiness: -2 } }, { text: "喺台下發白日夢，聽唔明就算", effect: { smart: -6, happiness: 3 } }] },
+        13: { text: "13 歲學校搞學會招募，你面臨興趣嘅交叉點。", choices: [{ text: "加入電腦程式學會，學整網頁同Coding", effect: { smart: 10, happiness: 5 } }, { text: "加入管樂團學吹樂器，培養音樂修養", effect: { happiness: 8, smart: 5, wealth: -100 } }] },
+        14: { text: "14 歲中三選科前夕，屋企人希望你將來讀理科/醫科，但你其實對藝術有興趣。", choices: [{ text: "順應屋企人期望，揀理科穩陣走前路", effect: { smart: 10, wealth: 200, happiness: -5 } }, { text: "堅持自我，揀自己鍾意嘅視藝/文科", effect: { happiness: 10, smart: 4 } }] },
+        15: { text: "15 歲學校舉辦童軍戶外露營活動，夜晚要同組員一齊起營同煮飯。", choices: [{ text: "做主力大廚幫手起爐煮出豐富晚餐", effect: { health: 6, happiness: 8, smart: 4 } }, { text: "Hea做幫手遞下嘢，主要負責食", effect: { happiness: 4 } }] },
+        16: { text: "16 歲開始步入中學高年級，身邊同學開始互相比較大家嘅零用錢同手機牌子。", choices: [{ text: "專注自己學業同興趣，唔盲目比較攀比", effect: { smart: 8, happiness: 6 } }, { text: "問老豆老母扭計要換最新款旗艦智能手機", effect: { wealth: -800, happiness: 6 } }] },
+        17: { text: "17 歲中六最後衝刺，距離 DSE 只剩三個星期，溫書溫到情緒焦慮。", choices: [{ text: "實行地獄式閉關溫習，日操夜操 Past Paper", effect: { smart: 15, health: -8, happiness: -8 } }, { text: "調節心態，早睡早起兼適度同朋友傾計減壓", effect: { health: 8, happiness: 8, smart: 6 } }] },
+        18: { text: "18 歲 DSE 放榜喇！成績出黎比預期中有些少落差，要即刻決定 VTC、asso 定重讀。", choices: [{ text: "執平伏心情報讀心儀嘅高級文憑/asso課程，繼續向上爬", effect: { smart: 10, wealth: -500, happiness: 3 } }, { text: "決定毅然打工投身社會賺錢", effect: { wealth: 5000, smart: -3, happiness: 2 } }] },
+        19: { text: "19 歲大專生涯，朋友組隊叫你去蘭桂坊或者派對玩通宵。", choices: [{ text: "去體驗下夜生活同擴闊社交圈子", effect: { happiness: 10, health: -5, wealth: -300 } }, { text: "拒絕夜蒲，留喺屋企煲劇打機休息", effect: { health: 5, happiness: 6 } }] },
+        20: { text: "20 歲暑假，你決定同朋友去一次自由行，但budget有限。", choices: [{ text: "去鄰近嘅日本/台灣窮遊，深度體驗當地文化", effect: { happiness: 12, wealth: -4000, smart: 5 } }, { text: "留港做freelance兼職，儲多啲實質現金", effect: { wealth: 6000, happiness: 3 } }] }
     };
 
     let currentChatContact = null;
@@ -619,7 +499,6 @@
             return;
         }
 
-        // 檢查該特定年齡有冇專屬事件
         let currentEvent = exactAgeEventMap[player.age];
 
         if (currentEvent) {
@@ -632,7 +511,6 @@
             document.getElementById('choicesContainer').innerHTML = choicesHTML;
             document.getElementById('nextYearBtn').style.display = 'none';
         } else {
-            // 超過地圖歲數嘅成年/長者期動態生成專屬宏大事件
             const adultPool = [
                 { text: `喺${player.district}返工期間，公司突然宣佈進行架構重組，你面臨轉組定係跳槽嘅交叉點。`, choices: [{ text: "接受內部調職挑戰新崗位", effect: { smart: 8, wealth: 2000, happiness: 2 } }, { text: "趁機出黎外面見工轉工搵高人工", effect: { wealth: 5000, smart: 5, happiness: 5 } }] },
                 { text: "朋友邀請你夾份合夥搞一間屬於自己嘅樓上咖啡店兼手作坊。", choices: [{ text: "大膽投資落去，實踐夢想", effect: { wealth: -15000, happiness: 15, smart: 8 } }, { text: "保守起見拒絕，穩陣逗人工", effect: { wealth: 4000, happiness: 2 } }] },
@@ -735,26 +613,36 @@
         }
 
         options.forEach(opt => {
-            choicesHTML += `<button class="choice-btn" onclick="sendChat('${name}', '${opt.text}', '${opt.reply}', ${JSON.stringify(opt.effect)})">${opt.text}</button>`;
+            choicesHTML += `<button class="choice-btn" onclick="sendChat('${name}', '${opt.text.replace(/'/g, "\\'")}', '${opt.reply.replace(/'/g, "\\'")}', ${JSON.stringify(opt.effect)})">${opt.text}</button>`;
         });
 
         document.getElementById('chatChoices').innerHTML = choicesHTML;
     }
 
+    // 徹底修復：直接同步上屏、防重覆點擊與完美回覆
     function sendChat(name, myText, replyText, effect) {
         let chatBox = document.getElementById('chatBox');
+        let chatChoices = document.getElementById('chatChoices');
         
-        // 即時上屏
-        chatBox.innerHTML += `<div class="chat-bubble me"><b>你：</b>${myText}</div>`;
+        // 1. 立即清空選項防止連續點擊發生錯亂
+        chatChoices.innerHTML = `<p style="color:#718093; font-style:italic; text-align:center; font-size:13px;">正在發送訊息...</p>`;
+
+        // 2. 顯示我的訊息
+        let myBubble = document.createElement('div');
+        myBubble.className = "chat-bubble me";
+        myBubble.innerHTML = `<b>你：</b>${myText}`;
+        chatBox.appendChild(myBubble);
         chatBox.scrollTop = chatBox.scrollHeight;
 
-        // 清空選項並显示正在輸入
-        document.getElementById('chatChoices').innerHTML = `<p style="color:#718093; font-style:italic; text-align:center; font-size:13px;">對方正在輸入中...</p>`;
-
+        // 3. 延遲極短時間後顯示對方回覆
         setTimeout(() => {
-            chatBox.innerHTML += `<div class="chat-bubble other"><b>${name}：</b>${replyText}</div>`;
+            let otherBubble = document.createElement('div');
+            otherBubble.className = "chat-bubble other";
+            otherBubble.innerHTML = `<b>${name}：</b>${replyText}`;
+            chatBox.appendChild(otherBubble);
             chatBox.scrollTop = chatBox.scrollHeight;
 
+            // 套用數值變動
             if (effect.happiness) player.happiness = Math.min(100, player.happiness + effect.happiness);
             if (effect.health) player.health = Math.min(100, player.health + effect.health);
             if (effect.smart) player.smart = Math.min(100, player.smart + effect.smart);
@@ -765,12 +653,11 @@
 
             updateUI();
 
-            setTimeout(() => {
-                if (currentChatContact === name) {
-                    generateChatChoices(name);
-                }
-            }, 500);
-        }, 600);
+            // 重新生成選項供繼續對話
+            if (currentChatContact === name) {
+                generateChatChoices(name);
+            }
+        }, 400);
     }
 
     function closeChat() {
