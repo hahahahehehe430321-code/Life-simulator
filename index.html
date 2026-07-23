@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>人生旅程互動聊天遊戲</title>
+    <title>全方位人生旅程模擬器</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -77,6 +77,7 @@
             gap: 8px;
             background: #ffffff;
             border-top: 1px solid #eee;
+            flex-shrink: 0;
         }
 
         .choice-btn {
@@ -95,7 +96,6 @@
             background-color: #d0e8ff;
         }
 
-        /* 確保輸入同發送按鈕容器獨立且排版正確 */
         .chat-input-container {
             display: flex;
             align-items: center;
@@ -150,22 +150,21 @@
 <body>
 
     <div class="chat-container">
-        <div class="chat-header">人生旅程：人際成長篇</div>
+        <div class="chat-header">全方位人生模擬器</div>
         
         <!-- 訊息顯示區域 -->
         <div id="chat-messages" class="chat-messages">
-            <div class="message system">歡迎黎到人生旅程！隨住年紀增長，你會喺唔同嘅階段遇到唔同嘅人，擴闊你嘅人際關係網絡。請選擇你現階段想專注嘅方向：</div>
+            <div class="message system">歡迎嚟到你嘅人生旅程！由細到大，你將會經歷無數嘅抉擇，隨住年紀增長亦會識到越來越多唔同嘅人。準備好開始未？</div>
         </div>
 
         <!-- 選項按鈕區域 -->
         <div id="choices-container" class="choices-container">
-            <button class="choice-btn" onclick="selectChoice('學生時期：專注同幾位知心好友建立深厚默契')">學生時期：專注同幾位知心好友建立深厚默契</button>
-            <button class="choice-btn" onclick="selectChoice('踏入社會：開始結識各行各業嘅新朋友同夥伴')">踏入社會：開始結識各行各業嘅新朋友同夥伴</button>
+            <button class="choice-btn" onclick="nextStage('childhood')">童年時期：探索興趣，同第一班朋友仔玩耍</button>
         </div>
 
-        <!-- 聊天輸入框與清晰嘅紙飛機發送按鈕 -->
+        <!-- 聊天輸入框與紙飛機發送按鈕 -->
         <div class="chat-input-container">
-            <input type="text" id="chat-input" placeholder="輸入你想同聊天室講嘅嘢..." />
+            <input type="text" id="chat-input" placeholder="隨時喺度輸入你想講嘅嘢..." />
             <button id="send-btn" class="send-button" title="發送訊息">
                 <!-- 紙飛機 SVG 圖標 -->
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
@@ -177,57 +176,82 @@
 
     <script>
         const messagesContainer = document.getElementById('chat-messages');
+        const choicesContainer = document.getElementById('choices-container');
         const inputField = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
 
-        // 新增訊息到聊天室的函數
         function appendMessage(text, sender = 'user') {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', sender);
             messageDiv.textContent = text;
             messagesContainer.appendChild(messageDiv);
-            
-            // 自動捲動到最新訊息
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // 處理玩家點擊上方「人際關係選擇」的操作
-        function selectChoice(choiceText) {
-            appendMessage(choiceText, 'user');
-            
-            // 隨住年紀與人際關係發展的劇情回應
-            setTimeout(() => {
-                let responseText = "";
-                if (choiceText.includes('學生時期')) {
-                    text = "你選擇咗珍惜學生時代嘅純粹友誼。雖然圈子唔大，但呢班一齊玩遊戲、笑過喊過嘅朋友會成為你最寶貴嘅回憶！";
-                } else {
-                    text = "你選擇咗擴闊視野！隨住年紀增長，你開始喺唔同場合識到更多背景各異嘅新朋友，人際關係變得更加豐富多彩。";
-                }
-                appendMessage(text, 'system');
-            }, 600);
+        // 人生各個階段的劇情與選擇邏輯
+        function nextStage(stage) {
+            if (stage === 'childhood') {
+                appendMessage("童年時期：探索興趣，同第一班朋友仔玩耍", 'user');
+                setTimeout(() => {
+                    appendMessage("你喺童年時期過得好開心，學識咗畫畫、玩遊戲，仲結識咗幾位好盲眼嘅童年玩伴。", 'system');
+                    updateChoices([
+                        { text: "青少年時期：專注學業，發掘更多新嗜好同擴闊社交圈子", action: "teen" }
+                    ]);
+                }, 600);
+            } else if (stage === 'teen') {
+                appendMessage("青少年時期：專注學業，發掘更多新嗜好同擴闊社交圈子", 'user');
+                setTimeout(() => {
+                    appendMessage("踏入青春期，你開始接觸到創作、音樂同埋更多唔同背景嘅朋友，人際關係變得豐富，亦開始思考未來嘅路。", 'system');
+                    updateChoices([
+                        { text: "成年/社會時期：投身社會工作，結識各行各業嘅夥伴與摯友", action: "adult" }
+                    ]);
+                }, 600);
+            } else if (stage === 'adult') {
+                appendMessage("成年/社會時期：投身社會工作，結識各行各業嘅夥伴與摯友", 'user');
+                setTimeout(() => {
+                    appendMessage("恭喜你！你已經經歷咗完整嘅成長。隨著年紀增長，你身邊嘅人愈黎愈多，人生閱歷亦變得非常豐富。呢個係你精彩嘅全方位人生！", 'system');
+                    updateChoices([
+                        { text: "重新開始新嘅人生旅程", action: "restart" }
+                    ]);
+                }, 600);
+            } else if (stage === 'restart') {
+                appendMessage("重新開始新嘅人生旅程", 'user');
+                setTimeout(() => {
+                    appendMessage("人生再次重啟，請展開新嘅篇章！", 'system');
+                    updateChoices([
+                        { text: "童年時期：探索興趣，同第一班朋友仔玩耍", action: "childhood" }
+                    ]);
+                }, 600);
+            }
         }
 
-        // 處理聊天室輸入框文字發送
+        // 動態更新上方按鈕
+        function updateChoices(choices) {
+            choicesContainer.innerHTML = "";
+            choices.forEach(c => {
+                const btn = document.createElement('button');
+                btn.classList.add('choice-btn');
+                btn.textContent = c.text;
+                btn.onclick = () => nextStage(c.action);
+                choicesContainer.appendChild(btn);
+            });
+        }
+
+        // 處理聊天室自訂文字發送
         function handleSendMessage() {
             const messageText = inputField.value.trim();
             if (messageText === "") return;
 
-            // 發送用戶訊息到聊天室
             appendMessage(messageText, 'user');
-            
-            // 清空輸入框
             inputField.value = "";
 
-            // 聊天室智能回覆（體現人際互動與成長）
             setTimeout(() => {
-                appendMessage(`聊天室好友回覆：「收到你嘅分享！人越大真係會識到越多唔同嘅人，每段關係都有佢獨特嘅意義呢～」`, 'system');
+                appendMessage(`聊天室回應：「收到！你喺人生呢個階段嘅感受真係好深刻呢～」`, 'system');
             }, 600);
         }
 
-        // 綁定紙飛機按鈕點擊事件
+        // 綁定按鈕與鍵盤事件
         sendBtn.addEventListener('click', handleSendMessage);
-
-        // 綁定 Enter 鍵發送事件
         inputField.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 handleSendMessage();
